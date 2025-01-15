@@ -10,6 +10,7 @@ import BuatAkun from './src/screens/crud/BuatAkun';
 import Dashboard from './src/screens/Dashboard';
 import TambahJadwal from './src/screens/crud/TambahJadwal';
 import EditJadwal from './src/screens/crud/EditJadwal';
+import Notifikasi from './src/screens/notifikasi/Notifikasi';
 
 const Stack = createNativeStackNavigator();
 
@@ -26,6 +27,7 @@ const App = () => {
         <Stack.Screen name="Dashboard" component={Dashboard} />
         <Stack.Screen name="TambahJadwal" component={TambahJadwal} />
         <Stack.Screen name="EditJadwal" component={EditJadwal} />
+        <Stack.Screen name="Notifikasi" component={Notifikasi} />
       </Stack.Navigator>
     </NavigationContainer>
   );
