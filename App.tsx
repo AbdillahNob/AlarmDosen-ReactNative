@@ -8,6 +8,7 @@ import SplashSc2 from './src/screens/SplashSc2';
 import Login from './src/screens/Login';
 import BuatAkun from './src/screens/crud/BuatAkun';
 import Dashboard from './src/screens/Dashboard';
+import TambahJadwal from './src/screens/crud/TambahJadwal';
 
 const Stack = createNativeStackNavigator();
 
@@ -22,6 +23,7 @@ const App = () => {
         <Stack.Screen name="Login" component={Login} />
         <Stack.Screen name="BuatAkun" component={BuatAkun} />
         <Stack.Screen name="Dashboard" component={Dashboard} />
+        <Stack.Screen name="TambahJadwal" component={TambahJadwal} />
       </Stack.Navigator>
     </NavigationContainer>
   );
