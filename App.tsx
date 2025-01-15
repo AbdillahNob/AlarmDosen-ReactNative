@@ -5,6 +5,7 @@ import {NavigationContainer} from '@react-navigation/native';
 
 import SplashSc from './src/screens/SplashSc';
 import SplashSc2 from './src/screens/SplashSc2';
+import Login from './src/screens/Login';
 
 const Stack = createNativeStackNavigator();
 
@@ -16,6 +17,7 @@ const App = () => {
         screenOptions={{headerShown: false}}>
         <Stack.Screen name="Splash" component={SplashSc} />
         <Stack.Screen name="Splash2" component={SplashSc2} />
+        <Stack.Screen name="Login" component={Login} />
       </Stack.Navigator>
     </NavigationContainer>
   );
