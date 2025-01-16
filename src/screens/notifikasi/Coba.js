@@ -1,11 +1,21 @@
-import {StyleSheet, Text, TouchableOpacity, View, Alert} from 'react-native';
+import {
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+  Alert,
+  Platform,
+  PermissionsAndroid,
+} from 'react-native';
 import React, {useEffect, useState} from 'react';
 import notifee, {
   AndroidImportance,
   AndroidColor,
   EventType,
+  TriggerType,
 } from '@notifee/react-native';
 import {DateTimePickerAndroid} from '@react-native-community/datetimepicker';
+// import {acquireWakeLock, releaseWakeLock} from 'react-native-android-wake-lock';
 
 const Coba = () => {
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -23,13 +33,24 @@ const Coba = () => {
     });
 
     return () => {
-      unsubscribe();
+      unsubscribe;
     };
   }, []);
 
   // Minta izin notifikasi
   const requestPermissionNotifee = async () => {
-    await notifee.requestPermission();
+    if (Platform.OS === 'android' && Platform.Version >= 33) {
+      const granted = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS,
+        await notifee.requestPermission(),
+      );
+
+      if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+        console.log('Izin notifikasi diberikan');
+      } else {
+        console.log('Izin notifikasi ditolak');
+      }
+    }
   };
 
   // Buat channel notifikasi
@@ -80,15 +101,25 @@ const Coba = () => {
 
     const now = new Date();
     const delay = combinedDateTime.getTime() - now.getTime();
+    //    const trigger = {
+    //   timestamp: Date.now() + 3000,
+    //   type: TriggerType.TIMESTAMP,
+    //   alarmManager: { allowWhileIdle: true },
+    // };
 
     if (delay <= 0) {
       Alert.alert('Error', 'Waktu yang dipilih sudah lewat!');
       return;
     }
 
-    setTimeout(async () => {
-      // Mulai alarm sebagai Foreground Service
-      await notifee.displayNotification({
+    const trigger = {
+      type: TriggerType.TIMESTAMP,
+      timestamp: combinedDateTime.getTime(), // Waktu alarm
+      alarmManager: {allowWhileIdle: true}, // Memastikan alarm tetap aktif
+    };
+    // Mulai alarm sebagai Foreground Service
+    await notifee.createTriggerNotification(
+      {
         title: '⏰ Alarm Berbunyi!',
         body: 'Tekan untuk mematikan alarm.',
         android: {
@@ -110,14 +141,15 @@ const Coba = () => {
             },
           ],
         },
-      });
+      },
+      trigger,
 
-      console.log('Alarm berbunyi!');
-    }, delay);
-
-    Alert.alert(
-      'Alarm Dijadwalkan',
-      `Alarm akan berbunyi pada: ${combinedDateTime}`,
+      // releaseWakeLock();
+      // console.log('Alarm berbunyi!'),
+      Alert.alert(
+        'Alarm Dijadwalkan',
+        `Alarm akan berbunyi pada: ${combinedDateTime}`,
+      ),
     );
   }
 
