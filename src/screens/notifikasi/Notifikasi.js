@@ -124,6 +124,7 @@ const Notifikasi = () => {
 
   const closeModal = () => {
     setModalVisible(false);
+    setModalVisibleDetail(false);
   };
 
   const openModalDetail = () => {
@@ -135,18 +136,17 @@ const Notifikasi = () => {
     const data = [
       {
         id: 1,
-        value:
-          'Saya Sedang Sakit, Kapan Kalian punya waktu kosong utk kelas tambahan?',
+        value: 'Saya Sedang Sakit, jadi tidak bisa masuk di kelas 1-TALGO-H',
       },
       {
         id: 2,
         value:
-          'Saya lagi ada kegiatan, kapan kalian punya waktu kosong untuk kelas pengganti?',
+          'Saya lagi ada kegiatan, jadi tidak bisa masuk di kelas 1-TALGO-H',
       },
     ];
     return data.map(({value, id}, key) => (
       <View key={key}>
-        <TouchableOpacity value={value}>
+        <TouchableOpacity value={value} onPress={() => aturSentWa(value)}>
           <Text
             style={{
               width: w('65%'),
