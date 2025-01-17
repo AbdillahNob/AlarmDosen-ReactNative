@@ -13,6 +13,7 @@ import notifee, {
   AndroidColor,
   EventType,
   TriggerType,
+  TimestampTrigger,
 } from '@notifee/react-native';
 import {DateTimePickerAndroid} from '@react-native-community/datetimepicker';
 // import {acquireWakeLock, releaseWakeLock} from 'react-native-android-wake-lock';
@@ -20,9 +21,19 @@ import {StackActions, useNavigation} from '@react-navigation/native';
 import {Screen} from 'react-native-screens';
 
 const Coba = () => {
-  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [selectedDay, setSelectedDay] = useState(1);
   const [selectedTime, setSelectedTime] = useState(new Date());
   const navigation = useNavigation();
+
+  const daysOfWeek = [
+    {label: 'Minggu', value: 0},
+    {label: 'Senin', value: 1},
+    {label: 'Selasa', value: 2},
+    {label: 'Rabu', value: 3},
+    {label: 'Kamis', value: 4},
+    {label: 'Jumat', value: 5},
+    {label: 'Sabtu', value: 6},
+  ];
 
   useEffect(() => {
     requestPermissionNotifee();
@@ -91,18 +102,6 @@ const Coba = () => {
     });
   };
 
-  // Tampilkan Date Picker
-  const showDatePicker = () => {
-    DateTimePickerAndroid.open({
-      value: selectedDate,
-      mode: 'date',
-      is24Hour: true,
-      onChange: (event, date) => {
-        if (date) setSelectedDate(date);
-      },
-    });
-  };
-
   // Tampilkan Time Picker
   const showTimePicker = () => {
     DateTimePickerAndroid.open({
@@ -117,38 +116,39 @@ const Coba = () => {
 
   // Jadwalkan alarm
   async function scheduleAlarm() {
-    const combinedDateTime = new Date(
-      selectedDate.getFullYear(),
-      selectedDate.getMonth(),
-      selectedDate.getDate(),
+    const now = new Date();
+    const today = now.getDay(); // 0 (Minggu) - 6 (Sabtu)
+    let daysUntilAlarm = selectedDay - today;
+    console.log(today);
+
+    // Kalau hari sudah lewat, jadwalkan untuk minggu depan
+    if (daysUntilAlarm < 0 || (daysUntilAlarm === 0 && selectedTime < now)) {
+      daysUntilAlarm += 7;
+    }
+
+    // Hitung waktu alarm berikutnya
+    const nextAlarmDate = new Date(now);
+    nextAlarmDate.setDate(now.getDate() + daysUntilAlarm);
+    nextAlarmDate.setHours(
       selectedTime.getHours(),
       selectedTime.getMinutes(),
       0,
+      0,
     );
-
-    const now = new Date();
-    const delay = combinedDateTime.getTime() - now.getTime();
-    //    const trigger = {
-    //   timestamp: Date.now() + 3000,
-    //   type: TriggerType.TIMESTAMP,
-    //   alarmManager: { allowWhileIdle: true },
-    // };
-
-    if (delay <= 0) {
-      Alert.alert('Error', 'Waktu yang dipilih sudah lewat!');
-      return;
-    }
 
     const trigger = {
       type: TriggerType.TIMESTAMP,
-      timestamp: combinedDateTime.getTime(), // Waktu alarm
-      alarmManager: {allowWhileIdle: true}, // Memastikan alarm tetap aktif
+      timestamp: nextAlarmDate.getTime(), // Waktu alarm
+      alarmManager: {allowWhileIdle: true},
     };
+
     // Mulai alarm sebagai Foreground Service
     await notifee.createTriggerNotification(
       {
         title: '⏰ Alarm Berbunyi!',
-        body: 'Tekan untuk mematikan alarm.',
+        body: `Jadwal Mengajar Kelas : 3-TALGO ${
+          daysOfWeek.find(day => day.value === selectedDay).label
+        }`,
         android: {
           channelId: 'alarm-channel-v3',
           color: AndroidColor.RED,
@@ -179,7 +179,9 @@ const Coba = () => {
 
       Alert.alert(
         'Alarm Dijadwalkan',
-        `Alarm akan berbunyi pada: ${combinedDateTime}`,
+        `Alarm akan berbunyi pada Hari : ${
+          daysOfWeek.find(day => day.value === selectedDay).label
+        } Pukul : ${selectedTime.toLocaleTimeString()} `,
       ),
     );
   }
@@ -192,9 +194,15 @@ const Coba = () => {
 
   return (
     <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-      <TouchableOpacity onPress={showDatePicker} style={styles.button}>
-        <Text style={{color: 'white'}}>PILIH TANGGAL</Text>
-      </TouchableOpacity>
+      <Text style={{color: 'black'}}>PILIH Hari</Text>
+      {daysOfWeek.map((day, key) => (
+        <TouchableOpacity
+          key={key}
+          onPress={() => setSelectedDay(day.value)}
+          style={styles.button}>
+          <Text style={{color: 'white'}}>{day.label}</Text>
+        </TouchableOpacity>
+      ))}
 
       <TouchableOpacity onPress={showTimePicker} style={styles.button}>
         <Text style={{color: 'white'}}>PILIH WAKTU</Text>
@@ -205,7 +213,7 @@ const Coba = () => {
       </TouchableOpacity>
 
       <Text style={{marginTop: 20}}>
-        Tanggal: {selectedDate.toDateString()}
+        Hari: {daysOfWeek.find(day => day.value === selectedDay).label}
       </Text>
       <Text>Waktu: {selectedTime.toLocaleTimeString()}</Text>
     </View>
