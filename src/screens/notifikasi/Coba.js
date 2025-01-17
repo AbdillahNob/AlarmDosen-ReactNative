@@ -139,54 +139,74 @@ const Coba = () => {
       0,
     );
 
-    const trigger = {
-      type: TriggerType.TIMESTAMP,
-      timestamp: nextAlarmDate.getTime(), // Waktu alarm
-      alarmManager: {allowWhileIdle: true},
-    };
-    console.log(nextAlarmDate);
+    const firstNotificationTime = new Date(nextAlarmDate);
+    firstNotificationTime.setDate(nextAlarmDate.getDate() - 1);
+    const secondNotificationTime = new Date(nextAlarmDate);
+    secondNotificationTime.setMinutes(nextAlarmDate.getMinutes() - 15);
 
-    // Mulai alarm sebagai Foreground Service
-    await notifee.createTriggerNotification(
+    const alarmTimes = [
       {
-        title: '⏰ Alarm Berbunyi!',
-        body: `Jadwal Mengajar Kelas : 3-TALGO ${
-          daysOfWeek.find(day => day.value === selectedDay).label
-        }`,
-        android: {
-          channelId: 'alarm-channel-v3',
-          color: AndroidColor.RED,
-          sound: 'alarm_tone',
-          ongoing: true, // Notifikasi tidak bisa di-swipe
-          loopSound: true,
-          importance: AndroidImportance.HIGH,
-          fullScreenAction: {
-            id: 'default',
-            launchActivity: 'default',
-          },
-          pressAction: {
-            id: 'open_modal',
-            launchActivity: 'default',
-          },
-          actions: [
-            {
-              title: '🛑 Matikan Alarm',
-              pressAction: {
-                id: 'stop',
+        label: '1 Hari Sebelumnya',
+        time: firstNotificationTime,
+      },
+      {
+        label: '15 Menit Sebelumnya',
+        time: secondNotificationTime,
+      },
+      {label: 'Saat Jadwal', time: nextAlarmDate},
+    ];
+
+    alarmTimes.map(async ({label, time}) => {
+      // Mulai alarm sebagai Foreground Service
+      if (time > now) {
+        await notifee.createTriggerNotification(
+          {
+            title: '⏰ Alarm Berbunyi!',
+            body: `${label} : 3-TALGO, PUKUL : ${selectedTime.toLocaleTimeString()} ${
+              daysOfWeek.find(day => day.value === selectedDay).label
+            }`,
+            android: {
+              channelId: 'alarm-channel-v3',
+              color: AndroidColor.RED,
+              sound: 'alarm_tone',
+              ongoing: true, // Notifikasi tidak bisa di-swipe
+              loopSound: true,
+              importance: AndroidImportance.HIGH,
+              fullScreenAction: {
+                id: 'default',
                 launchActivity: 'default',
               },
+              pressAction: {
+                id: 'open_modal',
+                launchActivity: 'default',
+              },
+              actions: [
+                {
+                  title: '🛑 Matikan Alarm',
+                  pressAction: {
+                    id: 'stop',
+                    launchActivity: 'default',
+                  },
+                },
+              ],
             },
-          ],
-        },
-      },
-      trigger,
-
-      Alert.alert(
-        'Alarm Dijadwalkan',
-        `Alarm akan berbunyi pada Hari : ${
-          daysOfWeek.find(day => day.value === selectedDay).label
-        } Pukul : ${selectedTime.toLocaleTimeString()} `,
-      ),
+          },
+          {
+            type: TriggerType.TIMESTAMP,
+            timestamp: time.getTime(),
+            alarmManager: {allowWhileIdle: true},
+          },
+        );
+      }
+    });
+    console.log(`Jadwal ke-1 : ${firstNotificationTime}`);
+    console.log(`Jadwal ke-2 : ${secondNotificationTime}`);
+    console.log(`Jadwal ke-3 : ${nextAlarmDate}`);
+    Alert.alert(
+      'Alarm Dijadwalkan',
+      `Alarm akan berbunyi pada Hari : ${
+        daysOfWeek.find(day => day.value === selectedDay).label
+      } Pukul : ${selectedTime.toLocaleTimeString()} `,
     );
   }
 
