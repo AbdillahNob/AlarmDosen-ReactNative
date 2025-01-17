@@ -17,6 +17,7 @@ import notifee, {
 import {DateTimePickerAndroid} from '@react-native-community/datetimepicker';
 // import {acquireWakeLock, releaseWakeLock} from 'react-native-android-wake-lock';
 import {StackActions, useNavigation} from '@react-navigation/native';
+import {Screen} from 'react-native-screens';
 
 const Coba = () => {
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -27,29 +28,39 @@ const Coba = () => {
     requestPermissionNotifee();
     createNotificationChannel();
 
-    // Listen event ketika tombol "Matikan Alarm" ditekan
-    const unsubscribe = notifee.onForegroundEvent(({type, detail}) => {
-      if (type === EventType.ACTION_PRESS && detail.pressAction.id === 'stop') {
-        stopAlarm();
-        navigation.dispatch(StackActions.replace('Notifikasi'));
-      }
-    });
+    // Foreground Event
+    const unsubscribeForeground = notifee.onForegroundEvent(
+      ({type, detail}) => {
+        if (type === EventType.ACTION_PRESS) {
+          if (detail.pressAction.id === 'stop') {
+            stopAlarm();
+            navigation.navigate('Notifikasi');
+          } else if (detail.pressAction.id === 'open_modal') {
+            stopAlarm();
+            navigation.navigate('Notifikasi'); // Arahkan ke Notifikasi
+          }
+        }
+      },
+    );
 
-    // Background event handler
-    const unBackground = notifee.onBackgroundEvent(async ({type, detail}) => {
-      console.log('Event di latar belakang:', type, detail);
-
-      // Tangani jenis event
-      if (type === EventType.ACTION_PRESS && detail.pressAction.id === 'stop') {
-        console.log('Tombol "Matikan Alarm" ditekan');
-        navigation.dispatch(StackActions.replace('Notifikasi'));
-        stopAlarm();
-      }
-    });
+    // Background Event
+    const unsubscribeBackground = notifee.onBackgroundEvent(
+      async ({type, detail}) => {
+        if (type === EventType.ACTION_PRESS) {
+          if (detail.pressAction.id === 'stop') {
+            stopAlarm();
+            navigation.navigate('Notifikasi');
+          } else if (detail.pressAction.id === 'open_modal') {
+            stopAlarm();
+            navigation.navigate('Notifikasi'); // Arahkan ke Notifikasi
+          }
+        }
+      },
+    );
 
     return () => {
-      unsubscribe;
-      unBackground;
+      unsubscribeForeground;
+      unsubscribeBackground;
     };
   }, []);
 
@@ -147,12 +158,18 @@ const Coba = () => {
           importance: AndroidImportance.HIGH,
           fullScreenAction: {
             id: 'default',
+            launchActivity: 'default',
+          },
+          pressAction: {
+            id: 'open_modal',
+            launchActivity: 'default',
           },
           actions: [
             {
               title: '🛑 Matikan Alarm',
               pressAction: {
                 id: 'stop',
+                launchActivity: 'default',
               },
             },
           ],
@@ -160,8 +177,6 @@ const Coba = () => {
       },
       trigger,
 
-      // releaseWakeLock();
-      // console.log('Alarm berbunyi!'),
       Alert.alert(
         'Alarm Dijadwalkan',
         `Alarm akan berbunyi pada: ${combinedDateTime}`,
@@ -174,11 +189,6 @@ const Coba = () => {
     await notifee.cancelAllNotifications();
     // Alert.alert('Alarm Dimatikan', 'Alarm berhasil dimatikan.');
   };
-  //   const stopRepeatAlarm = async () => {
-  //     await notifee.stopForegroundService();
-  //     console.log('Alarm diHENTIKAN');
-  //     Alert.alert('Alarm dimatikan', 'Alarm berhasil dimatikan');
-  //   };
 
   return (
     <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>

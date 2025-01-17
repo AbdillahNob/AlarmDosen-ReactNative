@@ -2,6 +2,7 @@ import {View, Text} from 'react-native';
 import React from 'react';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {NavigationContainer} from '@react-navigation/native';
+import {useRef} from 'react';
 
 import SplashSc from './src/screens/SplashSc';
 import SplashSc2 from './src/screens/SplashSc2';
@@ -31,7 +32,7 @@ const App = () => {
         <Stack.Screen
           name="Notifikasi"
           component={Notifikasi}
-          options={{presentation: 'modal', headerShown: false}}
+          options={{presentation: 'modal'}}
         />
         <Stack.Screen name="Coba" component={Coba} />
       </Stack.Navigator>

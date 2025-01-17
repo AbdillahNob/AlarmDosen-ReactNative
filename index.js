@@ -14,8 +14,6 @@ notifee.onBackgroundEvent(async ({type, detail}) => {
   // Tangani jenis event
   if (type === EventType.ACTION_PRESS && detail.pressAction.id === 'stop') {
     console.log('Tombol "Matikan Alarm" ditekan');
-    // await notifee.cancelAllNotifications(); // Hentikan notifikasi/alarm
-    Alert.alert('Alarm dimatikan', 'Alarm berhasil dimatikan.');
   }
 });
 
