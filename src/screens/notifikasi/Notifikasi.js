@@ -6,6 +6,8 @@ import {
   Modal,
   TouchableOpacity,
   Image,
+  Linking,
+  Alert,
 } from 'react-native';
 import React, {useState} from 'react';
 import {
@@ -13,6 +15,7 @@ import {
   heightPercentageToDP as h,
 } from '../../utils/responsive';
 import {useNavigation} from '@react-navigation/native';
+import SendIntentAndroid from 'react-native-send-intent';
 
 const Notifikasi = () => {
   const navigasi = useNavigation();
@@ -62,7 +65,9 @@ const Notifikasi = () => {
           <TouchableOpacity
             style={styles.buttonModal}
             onPress={() =>
-              value == 'Berhalangan Hadir' ? openModalDetail() : null
+              value == 'Berhalangan Hadir'
+                ? openModalDetail()
+                : aturSentWa(value)
             }>
             <Text style={styles.buttonModalText}>{value}</Text>
           </TouchableOpacity>
@@ -78,7 +83,9 @@ const Notifikasi = () => {
           <TouchableOpacity
             style={styles.buttonModal}
             onPress={() =>
-              value == 'Berhalangan Hadir' ? openModalDetail() : null
+              value == 'Berhalangan Hadir'
+                ? openModalDetail()
+                : aturSentWa(value)
             }>
             <Text style={styles.buttonModalText}>{value}</Text>
           </TouchableOpacity>
@@ -122,6 +129,27 @@ const Notifikasi = () => {
         </TouchableOpacity>
       </View>
     ));
+  };
+
+  const sendMessageWa = async (groupId, message) => {
+    try {
+      SendIntentAndroid.sendText({
+        text: message,
+        type: SendIntentAndroid.TEXT_PLAIN,
+        packageName: 'com.whatsapp',
+      });
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const aturSentWa = async value => {
+    const grupKelas = 'https://chat.whatsapp.com/IXKCUISiozMISOtGWpBg6t';
+    const grupStafFo = 'https://chat.whatsapp.com/LsIa1zJ3JMVBdCeVsKjpyq';
+    const message = value;
+
+    await sendMessageWa(grupKelas, message);
+    await sendMessageWa(grupStafFo, message);
   };
 
   return (
