@@ -7,6 +7,10 @@ import {
   Platform,
   PermissionsAndroid,
 } from 'react-native';
+import {
+  heightPercentageToDP as h,
+  widthPercentageToDP as w,
+} from '../../utils/responsive';
 import React, {useEffect, useState} from 'react';
 import notifee, {
   AndroidImportance,
@@ -16,9 +20,8 @@ import notifee, {
   TimestampTrigger,
 } from '@notifee/react-native';
 import {DateTimePickerAndroid} from '@react-native-community/datetimepicker';
-// import {acquireWakeLock, releaseWakeLock} from 'react-native-android-wake-lock';
 import {StackActions, useNavigation} from '@react-navigation/native';
-import {Screen} from 'react-native-screens';
+import {Picker} from '@react-native-picker/picker';
 
 const Coba = () => {
   const [selectedDay, setSelectedDay] = useState(1);
@@ -141,6 +144,7 @@ const Coba = () => {
       timestamp: nextAlarmDate.getTime(), // Waktu alarm
       alarmManager: {allowWhileIdle: true},
     };
+    console.log(nextAlarmDate);
 
     // Mulai alarm sebagai Foreground Service
     await notifee.createTriggerNotification(
@@ -195,14 +199,15 @@ const Coba = () => {
   return (
     <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
       <Text style={{color: 'black'}}>PILIH Hari</Text>
-      {daysOfWeek.map((day, key) => (
-        <TouchableOpacity
-          key={key}
-          onPress={() => setSelectedDay(day.value)}
-          style={styles.button}>
-          <Text style={{color: 'white'}}>{day.label}</Text>
-        </TouchableOpacity>
-      ))}
+      <View style={styles.picker}>
+        <Picker
+          selectedValue={selectedDay}
+          onValueChange={itemValue => setSelectedDay(itemValue)}>
+          {daysOfWeek.map((day, key) => (
+            <Picker.Item key={key} label={day.label} value={day.value} />
+          ))}
+        </Picker>
+      </View>
 
       <TouchableOpacity onPress={showTimePicker} style={styles.button}>
         <Text style={{color: 'white'}}>PILIH WAKTU</Text>
@@ -224,12 +229,19 @@ export default Coba;
 
 const styles = StyleSheet.create({
   button: {
-    width: '60%',
-    height: 50,
+    width: w('60%'),
+    height: h(7),
     backgroundColor: '#0F4473',
     borderRadius: 10,
     justifyContent: 'center',
     alignItems: 'center',
     marginTop: 20,
+  },
+  picker: {
+    height: h(7),
+    width: w('60%'),
+    backgroundColor: '#0F4473',
+    justifyContent: 'center',
+    borderRadius: w(3),
   },
 });
