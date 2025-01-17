@@ -46,12 +46,16 @@ const Coba = () => {
     const unsubscribeForeground = notifee.onForegroundEvent(
       ({type, detail}) => {
         if (type === EventType.ACTION_PRESS) {
+          const jenisModal = detail.notification.data.jenisModal;
+
           if (detail.pressAction.id === 'stop') {
+            console.log(jenisModal);
             stopAlarm();
-            navigation.navigate('Notifikasi');
+            navigation.navigate('Notifikasi', {jenisModal});
           } else if (detail.pressAction.id === 'open_modal') {
+            console.log(jenisModal);
             stopAlarm();
-            navigation.navigate('Notifikasi'); // Arahkan ke Notifikasi
+            navigation.navigate('Notifikasi', {jenisModal}); // Arahkan ke Notifikasi
           }
         }
       },
@@ -61,12 +65,15 @@ const Coba = () => {
     const unsubscribeBackground = notifee.onBackgroundEvent(
       async ({type, detail}) => {
         if (type === EventType.ACTION_PRESS) {
+          const jenisModal = detail.notification.data.jenisModal;
           if (detail.pressAction.id === 'stop') {
+            console.log(jenisModal);
             stopAlarm();
-            navigation.navigate('Notifikasi');
+            navigation.navigate('Notifikasi', {jenisModal}); // Arahkan ke Notifikasi
           } else if (detail.pressAction.id === 'open_modal') {
+            console.log(jenisModal);
             stopAlarm();
-            navigation.navigate('Notifikasi'); // Arahkan ke Notifikasi
+            navigation.navigate('Notifikasi', {jenisModal}); // Arahkan ke Notifikasi
           }
         }
       },
@@ -148,15 +155,17 @@ const Coba = () => {
       {
         label: '1 Hari Sebelumnya',
         time: firstNotificationTime,
+        jenisModal: 'sebelum 1',
       },
       {
         label: '15 Menit Sebelumnya',
         time: secondNotificationTime,
+        jenisModal: 'sebelum 15',
       },
-      {label: 'Saat Jadwal', time: nextAlarmDate},
+      {label: 'Saat Jadwal', time: nextAlarmDate, jenisModal: 'sekarang'},
     ];
 
-    alarmTimes.map(async ({label, time}) => {
+    alarmTimes.map(async ({label, time, jenisModal}) => {
       // Mulai alarm sebagai Foreground Service
       if (time > now) {
         await notifee.createTriggerNotification(
@@ -189,6 +198,9 @@ const Coba = () => {
                   },
                 },
               ],
+            },
+            data: {
+              jenisModal: jenisModal,
             },
           },
           {

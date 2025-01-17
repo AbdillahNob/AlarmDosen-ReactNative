@@ -9,19 +9,28 @@ import {
   Linking,
   Alert,
 } from 'react-native';
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   widthPercentageToDP as w,
   heightPercentageToDP as h,
 } from '../../utils/responsive';
 import {useNavigation} from '@react-navigation/native';
 import SendIntentAndroid from 'react-native-send-intent';
+import {useRoute} from '@react-navigation/native';
 
 const Notifikasi = () => {
+  const route = useRoute();
   const navigasi = useNavigation();
   const [modalVisible, setModalVisible] = useState(true);
-  const [jenisModal, setJenisModal] = useState('sekarang');
   const [modalVisibleDetail, setModalVisibleDetail] = useState(false);
+  const [jenisModal, setJenisModal] = useState(null);
+
+  const terimaJenisModal = route.params.jenisModal;
+
+  useEffect(() => {
+    setJenisModal(terimaJenisModal);
+    // console.log(jenisModal);
+  }, []);
 
   const deskripsi = () => {
     const data = [
@@ -56,8 +65,27 @@ const Notifikasi = () => {
     let keterangan = ket;
     if (keterangan === 'sekarang') {
       const data = [
-        {value: 'Saya Telah Masuk dikelas'},
-        {value: 'Saya Sedang Menuju ke-Kelas'},
+        {value: 'Saya Telah Hadir di kelas'},
+        {value: 'Saya Sedang perjalanan ke-Kelas'},
+        {value: 'Berhalangan Hadir'},
+      ];
+      return data.map(({value}, key) => (
+        <View key={key}>
+          <TouchableOpacity
+            style={styles.buttonModal}
+            onPress={() =>
+              value == 'Berhalangan Hadir'
+                ? openModalDetail()
+                : aturSentWa(value)
+            }>
+            <Text style={styles.buttonModalText}>{value}</Text>
+          </TouchableOpacity>
+        </View>
+      ));
+    } else if (keterangan == 'sebelum 15') {
+      const data = [
+        {value: 'Nanti saya hadir di Kelas'},
+        {value: 'Saya Sedang perjalanan Ke-kelas'},
         {value: 'Berhalangan Hadir'},
       ];
       return data.map(({value}, key) => (
@@ -75,7 +103,7 @@ const Notifikasi = () => {
       ));
     } else {
       const data = [
-        {value: 'Oke Besok saya hadir'},
+        {value: 'Besok saya hadir di kelas'},
         {value: 'Berhalangan Hadir'},
       ];
       return data.map(({value}, key) => (
@@ -270,7 +298,7 @@ const Notifikasi = () => {
                 </Text>
                 {deskripsi()}
               </View>
-              {button('sebelum')}
+              {button(jenisModal)}
               {/* Tombol untuk menutup modal */}
             </View>
           </View>
