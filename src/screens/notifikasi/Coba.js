@@ -16,10 +16,12 @@ import notifee, {
 } from '@notifee/react-native';
 import {DateTimePickerAndroid} from '@react-native-community/datetimepicker';
 // import {acquireWakeLock, releaseWakeLock} from 'react-native-android-wake-lock';
+import {StackActions, useNavigation} from '@react-navigation/native';
 
 const Coba = () => {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [selectedTime, setSelectedTime] = useState(new Date());
+  const navigation = useNavigation();
 
   useEffect(() => {
     requestPermissionNotifee();
@@ -29,11 +31,25 @@ const Coba = () => {
     const unsubscribe = notifee.onForegroundEvent(({type, detail}) => {
       if (type === EventType.ACTION_PRESS && detail.pressAction.id === 'stop') {
         stopAlarm();
+        navigation.dispatch(StackActions.replace('Notifikasi'));
+      }
+    });
+
+    // Background event handler
+    const unBackground = notifee.onBackgroundEvent(async ({type, detail}) => {
+      console.log('Event di latar belakang:', type, detail);
+
+      // Tangani jenis event
+      if (type === EventType.ACTION_PRESS && detail.pressAction.id === 'stop') {
+        console.log('Tombol "Matikan Alarm" ditekan');
+        navigation.dispatch(StackActions.replace('Notifikasi'));
+        stopAlarm();
       }
     });
 
     return () => {
       unsubscribe;
+      unBackground;
     };
   }, []);
 
@@ -156,9 +172,8 @@ const Coba = () => {
   //   Fungsi untuk menghentikan alarm
   const stopAlarm = async () => {
     await notifee.cancelAllNotifications();
-    Alert.alert('Alarm Dimatikan', 'Alarm berhasil dimatikan.');
+    // Alert.alert('Alarm Dimatikan', 'Alarm berhasil dimatikan.');
   };
-
   //   const stopRepeatAlarm = async () => {
   //     await notifee.stopForegroundService();
   //     console.log('Alarm diHENTIKAN');

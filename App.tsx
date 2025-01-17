@@ -28,7 +28,11 @@ const App = () => {
         <Stack.Screen name="Dashboard" component={Dashboard} />
         <Stack.Screen name="TambahJadwal" component={TambahJadwal} />
         <Stack.Screen name="EditJadwal" component={EditJadwal} />
-        <Stack.Screen name="Notifikasi" component={Notifikasi} />
+        <Stack.Screen
+          name="Notifikasi"
+          component={Notifikasi}
+          options={{presentation: 'modal', headerShown: false}}
+        />
         <Stack.Screen name="Coba" component={Coba} />
       </Stack.Navigator>
     </NavigationContainer>

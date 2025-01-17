@@ -17,7 +17,7 @@ import {useNavigation} from '@react-navigation/native';
 const Notifikasi = () => {
   const navigasi = useNavigation();
   const [modalVisible, setModalVisible] = useState(true);
-  const [jenisModal, setJenisModal] = useState(2);
+  const [jenisModal, setJenisModal] = useState('sekarang');
   const [modalVisibleDetail, setModalVisibleDetail] = useState(false);
 
   const deskripsi = () => {
@@ -51,7 +51,7 @@ const Notifikasi = () => {
 
   const button = ket => {
     let keterangan = ket;
-    if (keterangan === 'tepat') {
+    if (keterangan === 'sekarang') {
       const data = [
         {value: 'Saya Telah Masuk dikelas'},
         {value: 'Saya Sedang Menuju ke-Kelas'},
@@ -127,7 +127,7 @@ const Notifikasi = () => {
   return (
     <View style={{backgroundColor: '#0F4473', flex: 1}}>
       <StatusBar backgroundColor={'#0F4473'} barStyle={'light-content'} />
-      {jenisModal == 1 ? (
+      {jenisModal == 'sekarang' ? (
         <Modal
           visible={modalVisible}
           animationType="fade"
@@ -182,7 +182,7 @@ const Notifikasi = () => {
                 </Text>
                 {deskripsi()}
               </View>
-              {button('tepat')}
+              {button('sekarang')}
               {/* Tombol untuk menutup modal */}
             </View>
           </View>
