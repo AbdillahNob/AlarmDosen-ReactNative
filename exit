@@ -1,0 +1,21 @@
+* [33mff70488[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mnotifikasi[m[33m, [m[1;31morigin/notifikasi[m[33m)[m Send Pesan Feedback modalDetail sbnyk 2X
+* [33m4fe0ec0[m Validasi dari 3 Jenis Modal
+* [33mdd70162[m Send Pesan Feedback ke grup wa sebanyak 2X
+* [33m8257077[m Notifikasi dan Alarm tampil 3X, sebelum 1 hari, sblm 15 menit dan saat jadwalnya msk
+* [33m7615791[m Inputan Picker utk pilihan Hari
+* [33med93d29[m Notifikasi bisa tampil berdasarkan pilihan Hari, bkn Tgl
+* [33md686aa0[m Modal dapat ditampilkan dari notifikasi dibackGround App
+* [33m232826b[m Modal dapat ditampilkan dari Notifikasi
+* [33m5ea9ed0[m Notifikasi berjalan diLatarBelakang
+* [33m15c7b76[m Konfigurasi Notification with notifee
+* [33m01dd210[m Konfigurasi Notification with Firebase
+* [33me893d0d[m[33m ([m[1;31morigin/main[m[33m, [m[1;32mmain[m[33m)[m Desain UI Notifikasi-Complete
+* [33ma344c43[m Desain UI EditJadwal-Complete
+* [33mc130600[m Desain UI TambahJadwal-Complete
+* [33m448a11d[m Desain UI Dashboard-Complete
+* [33m13e52ae[m Desain UI BuatAkun-Complete
+* [33mb8d8345[m Desai UI Login-Complete
+* [33ma82cce3[m Desain UI Splash2-Complete
+* [33ma439658[m Desain UI Splash1-Complete
+* [33m9d9242c[m initial program
+* [33mf76452e[m Initial commit

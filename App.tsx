@@ -11,8 +11,8 @@ import BuatAkun from './src/screens/crud/BuatAkun';
 import Dashboard from './src/screens/Dashboard';
 import TambahJadwal from './src/screens/crud/TambahJadwal';
 import EditJadwal from './src/screens/crud/EditJadwal';
+import ModalPesan from './src/screens/notifikasi/ModalPesan';
 import Notifikasi from './src/screens/notifikasi/Notifikasi';
-import Coba from './src/screens/notifikasi/Coba';
 
 const Stack = createNativeStackNavigator();
 
@@ -20,7 +20,7 @@ const App = () => {
   return (
     <NavigationContainer>
       <Stack.Navigator
-        initialRouteName="Coba"
+        initialRouteName="Notifikasi"
         screenOptions={{headerShown: false}}>
         <Stack.Screen name="Splash" component={SplashSc} />
         <Stack.Screen name="Splash2" component={SplashSc2} />
@@ -30,11 +30,11 @@ const App = () => {
         <Stack.Screen name="TambahJadwal" component={TambahJadwal} />
         <Stack.Screen name="EditJadwal" component={EditJadwal} />
         <Stack.Screen
-          name="Notifikasi"
-          component={Notifikasi}
+          name="ModalPesan"
+          component={ModalPesan}
           options={{presentation: 'modal'}}
         />
-        <Stack.Screen name="Coba" component={Coba} />
+        <Stack.Screen name="Notifikasi" component={Notifikasi} />
       </Stack.Navigator>
     </NavigationContainer>
   );
