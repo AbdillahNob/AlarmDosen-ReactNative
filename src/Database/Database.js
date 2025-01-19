@@ -52,7 +52,7 @@ export const buatTabel = async () => {
     );
     throw error;
   }
-  console.log(data);
+  // console.log(data);
 };
 
 // Create Data
@@ -98,7 +98,7 @@ export const getData = async () => {
             const rows = results.rows.raw();
             console.log('Jumlah Data : ', rows.length);
             rows.map(data => {
-              console.log(`Berhasil tarik Data ${data.namaLengkap}`);
+              console.log(`Berhasil tarik Data ${data.username}`);
             });
 
             resolve(rows);

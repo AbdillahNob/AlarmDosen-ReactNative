@@ -1,12 +1,20 @@
-import {Image, StyleSheet, Text, View, TextInput} from 'react-native';
+import {
+  Image,
+  StyleSheet,
+  Text,
+  View,
+  TextInput,
+  Alert,
+  TouchableOpacity,
+} from 'react-native';
 import React, {useEffect, useState} from 'react';
 import {
   heightPercentageToDP as h,
   widthPercentageToDP as w,
 } from '../utils/responsive';
 import {StatusBar} from 'react-native';
-import Buttons from '../components/Buttons';
 import {useNavigation} from '@react-navigation/native';
+import {getDatabase} from '../Database/Database';
 
 const Login = () => {
   const navigation = useNavigation();
@@ -70,6 +78,43 @@ const Login = () => {
       setPassword(value);
     }
   };
+
+  // PROSES DATA
+  const checkLogin = async () => {
+    if (!username || !password) {
+      Alert.alert('Username dan Password tidak boleh kosong');
+      return;
+    }
+
+    try {
+      const db = await getDatabase();
+      await db.transaction(tx => {
+        tx.executeSql(
+          `SELECT * FROM AkunUser WHERE username = ? AND password = ?`,
+          [username, password],
+          (tx, results) => {
+            if (results.rows.length > 0) {
+              Alert.alert('Berhasil LOGIN', '', [
+                {text: 'OKE', onPress: navigasi()},
+              ]);
+            } else {
+              Alert.alert('Username dan Password anda salah!');
+            }
+          },
+          (tx, error) => {
+            console.log(`Gagal Login : ${error}`);
+          },
+        );
+      });
+    } catch (err) {
+      console.log(`Fungsi checkLogin : ${err}`);
+    }
+  };
+
+  const navigasi = () => {
+    navigation.navigate('Dashboard');
+  };
+
   return (
     <View style={styles.container}>
       <StatusBar translucent={true} backgroundColor={'transparent'} />
@@ -101,7 +146,32 @@ const Login = () => {
         {input()}
 
         <View style={{alignItems: 'center', marginTop: h(5)}}>
-          <Buttons teks={'Login'} navigasi={'Dashboard'} />
+          <View
+            style={{
+              alignItems: 'center',
+              marginBottom: h(4),
+              marginTop: h(3.4),
+            }}>
+            <TouchableOpacity
+              style={{
+                width: w(75),
+                height: h(7),
+                backgroundColor: '#0F4473',
+                justifyContent: 'center',
+                borderRadius: w(8),
+              }}
+              onPress={() => checkLogin()}>
+              <Text
+                style={{
+                  color: 'white',
+                  textAlign: 'center',
+                  fontSize: w(6),
+                  textTransform: 'uppercase',
+                }}>
+                buat
+              </Text>
+            </TouchableOpacity>
+          </View>
           <Text style={{marginTop: h(2)}}>
             Belum Punya Akun?
             <Text
