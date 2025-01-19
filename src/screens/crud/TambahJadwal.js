@@ -40,8 +40,12 @@ const TambahJadwal = () => {
         placeholder: 'Masukkan Nama Mata Kuliah',
       },
       {
+        label: 'Semester',
+        placeholder: '--- Pilih Semester ---',
+      },
+      {
         label: 'Hari',
-        placeholder: 'Pilih Hari',
+        placeholder: '--- Pilih Hari ---',
       },
       {
         label: 'Kelas',
@@ -61,17 +65,7 @@ const TambahJadwal = () => {
       },
       {
         label: 'Tipe Kelas',
-        placeholder: 'Pilih Tipe Jadwal',
-      },
-
-      {
-        label: 'Nada Dering',
-        placeholder: 'Pilih Nada Dering',
-      },
-
-      {
-        label: 'Link Group Wa kelas',
-        placeholder: 'Masukkan Link',
+        placeholder: '--- Pilih Tipe Jadwal ---',
       },
     ];
 
@@ -95,23 +89,28 @@ const TambahJadwal = () => {
           <Picker.Item label="Jumat" value="Jumat" style={{color: 'black'}} />
         </Picker>
       );
-    } else if (label == 'Tipe Kelas') {
+    } else if (label == 'Tipe Kelas' || label == 'Semester') {
+      let data = [];
+      if (label == 'Semester') {
+        data = [1, 2, 3, 4, 5, 6, 7];
+      } else {
+        data = ['Utama', 'Tambahan'];
+      }
+
       content = (
         <Picker
           selectedValue={tipeJadwal}
           style={styles.picker}
           onValueChange={itemValue => setTipeJadwal(itemValue)}>
-          <Picker.Item
-            label="--Pilih Tipe Kelas--"
-            value=""
-            style={{color: 'black'}}
-          />
-          <Picker.Item label="Utama" value="Utama" style={{color: 'black'}} />
-          <Picker.Item
-            label="Tambahan"
-            value="Tambahan"
-            style={{color: 'black'}}
-          />
+          <Picker.Item label={placeholder} value="" style={{color: 'black'}} />
+          {data.map((value, key) => (
+            <Picker.Item
+              key={key}
+              label={value}
+              value={value}
+              style={{color: 'black'}}
+            />
+          ))}
         </Picker>
       );
     } else if (label == 'Jam Mulai' || label == 'Jam Selesai') {
@@ -123,17 +122,6 @@ const TambahJadwal = () => {
           style={styles.textInput}
           onPress={() => validasiDate(label)}
         />
-      );
-    } else if (label == 'Nada Dering') {
-      content = (
-        <Button
-          title="Pilih Nada Dering"
-          onPress={pickMusicFile}
-          style={{
-            backgroundColor: '#0F4473',
-            width: w(5),
-            height: h(2),
-          }}></Button>
       );
     } else {
       content = (
@@ -168,16 +156,6 @@ const TambahJadwal = () => {
             alignItems: 'center',
           }}>
           {content}
-          {label == 'Nada Dering' ? (
-            <Text
-              style={{
-                color: 'black',
-                marginLeft: w(2),
-                justifyContent: 'center',
-              }}>
-              {nadaDering}
-            </Text>
-          ) : null}
         </View>
       </View>
     );
@@ -207,55 +185,55 @@ const TambahJadwal = () => {
   };
 
   // Fungsi untuk memilih file audio
-  const pickMusicFile = async () => {
-    const hasPermission = await requestPermission();
-    if (!hasPermission) {
-      Alert.alert('Izin Ditolak', 'Aplikasi tidak bisa mengakses penyimpanan.');
-      return;
-    }
+  // const pickMusicFile = async () => {
+  //   const hasPermission = await requestPermission();
+  //   if (!hasPermission) {
+  //     Alert.alert('Izin Ditolak', 'Aplikasi tidak bisa mengakses penyimpanan.');
+  //     return;
+  //   }
 
-    try {
-      const res = await DocumentPicker.pick({
-        type: [types.audio], // Hanya file audio yang bisa dipilih
-      });
+  //   try {
+  //     const res = await DocumentPicker.pick({
+  //       type: [types.audio], // Hanya file audio yang bisa dipilih
+  //     });
 
-      setNadaDering(res[0].name);
-      Alert.alert('Berhasil', `File terpilih: ${res[0].name}`);
-      console.log(res[0]);
-    } catch (err) {
-      if (DocumentPicker.isCancel(err)) {
-        console.log('Pemilihan file dibatalkan.');
-      } else {
-        console.error(err);
-      }
-    }
-  };
+  //     setNadaDering(res[0].name);
+  //     Alert.alert('Berhasil', `File terpilih: ${res[0].name}`);
+  //     console.log(res[0]);
+  //   } catch (err) {
+  //     if (DocumentPicker.isCancel(err)) {
+  //       console.log('Pemilihan file dibatalkan.');
+  //     } else {
+  //       console.error(err);
+  //     }
+  //   }
+  // };
 
   // Meminta izin di Android
-  const requestPermission = async () => {
-    if (Platform.OS === 'android') {
-      try {
-        const granted = await PermissionsAndroid.requestMultiple([
-          PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
-          PermissionsAndroid.PERMISSIONS.READ_MEDIA_AUDIO,
-          PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE, // Tambahan
-        ]);
+  // const requestPermission = async () => {
+  //   if (Platform.OS === 'android') {
+  //     try {
+  //       const granted = await PermissionsAndroid.requestMultiple([
+  //         PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
+  //         PermissionsAndroid.PERMISSIONS.READ_MEDIA_AUDIO,
+  //         PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE, // Tambahan
+  //       ]);
 
-        return (
-          granted['android.permission.READ_EXTERNAL_STORAGE'] ===
-            PermissionsAndroid.RESULTS.GRANTED ||
-          granted['android.permission.READ_MEDIA_AUDIO'] ===
-            PermissionsAndroid.RESULTS.GRANTED ||
-          granted['android.permission.WRITE_EXTERNAL_STORAGE'] ===
-            PermissionsAndroid.RESULTS.GRANTED
-        );
-      } catch (err) {
-        console.warn(err);
-        return false;
-      }
-    }
-    return true;
-  };
+  //       return (
+  //         granted['android.permission.READ_EXTERNAL_STORAGE'] ===
+  //           PermissionsAndroid.RESULTS.GRANTED ||
+  //         granted['android.permission.READ_MEDIA_AUDIO'] ===
+  //           PermissionsAndroid.RESULTS.GRANTED ||
+  //         granted['android.permission.WRITE_EXTERNAL_STORAGE'] ===
+  //           PermissionsAndroid.RESULTS.GRANTED
+  //       );
+  //     } catch (err) {
+  //       console.warn(err);
+  //       return false;
+  //     }
+  //   }
+  //   return true;
+  // };
 
   const validasiInput = (value, label) => {
     if (label == 'Nama Mata Kuliah') {

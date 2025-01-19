@@ -79,6 +79,9 @@ android {
     compileSdk rootProject.ext.compileSdkVersion
 
     namespace "com.alarmdosen"
+    packagingOptions {
+        pickFirst '**/*.so'
+    }
     defaultConfig {
         applicationId "com.alarmdosen"
         minSdkVersion rootProject.ext.minSdkVersion
