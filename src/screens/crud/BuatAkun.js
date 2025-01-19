@@ -5,22 +5,79 @@ import {
   View,
   TextInput,
   ScrollView,
+  Alert,
+  TouchableOpacity,
 } from 'react-native';
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   heightPercentageToDP as h,
   widthPercentageToDP as w,
 } from '../../utils/responsive';
 import {StatusBar} from 'react-native';
-import Buttons from '../../components/Buttons';
+import {useNavigation} from '@react-navigation/native';
+import {insertData, getData} from '../../Database/Database';
 
 const BuatAkun = () => {
+  const navigation = useNavigation();
   const [namaLengkap, setNamaLengkap] = useState('');
   const [nidn, setNidn] = useState('');
   const [namaPerguruan, setNamaPerguruan] = useState('');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [konfirPass, setKonfirPass] = useState('');
+  const [data, setData] = useState('');
+
+  useEffect(() => {
+    // Utk cek data" ditabel AkunUser
+    const fetchData = async () => {
+      try {
+        const hasil = await getData();
+        setData(hasil);
+      } catch (error) {
+        console.log(`Gagal AMBIL DATA : ${error}`);
+      }
+    };
+    fetchData();
+  }, []);
+
+  const handleSubmission = async () => {
+    if (
+      namaLengkap &&
+      nidn &&
+      namaPerguruan &&
+      username &&
+      password &&
+      konfirPass
+    ) {
+      try {
+        if (password == konfirPass) {
+          await insertData(
+            namaLengkap,
+            nidn,
+            namaPerguruan,
+            username,
+            password,
+          );
+          Alert.alert('Berhasil Menambahkan Akun', '', [
+            {text: 'OKE', onPress: () => navigasi()},
+          ]);
+        } else {
+          Alert.alert(
+            'info',
+            'Konfirmasi Password anda harus sama dengan password',
+          );
+        }
+      } catch (error) {
+        console.log(`Gagal menyimpan Data : ${error}`);
+      }
+    } else {
+      Alert.alert('ERROR', 'Harap isi semua kolom inputan!');
+    }
+  };
+
+  const navigasi = () => {
+    navigation.navigate('Login');
+  };
 
   const input = () => {
     const data = [
@@ -153,7 +210,25 @@ const BuatAkun = () => {
               marginBottom: h(4),
               marginTop: h(3.4),
             }}>
-            <Buttons teks={'Buat'} navigasi={'Login'} />
+            <TouchableOpacity
+              style={{
+                width: w(75),
+                height: h(7),
+                backgroundColor: '#0F4473',
+                justifyContent: 'center',
+                borderRadius: w(8),
+              }}
+              onPress={() => handleSubmission()}>
+              <Text
+                style={{
+                  color: 'white',
+                  textAlign: 'center',
+                  fontSize: w(6),
+                  textTransform: 'uppercase',
+                }}>
+                buat
+              </Text>
+            </TouchableOpacity>
           </View>
         </View>
       </ScrollView>

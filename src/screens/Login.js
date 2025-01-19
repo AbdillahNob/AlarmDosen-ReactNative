@@ -1,5 +1,5 @@
 import {Image, StyleSheet, Text, View, TextInput} from 'react-native';
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   heightPercentageToDP as h,
   widthPercentageToDP as w,

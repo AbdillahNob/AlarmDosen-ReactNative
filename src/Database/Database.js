@@ -10,7 +10,7 @@ export const openDb = async () => {
       name: 'AlarmDosen.db',
       location: 'default',
     });
-    console.log('Berhasil menghubungkan Database :', db);
+    // console.log('Berhasil menghubungkan Database :', db);
     return db;
   } catch (err) {
     console.log('Gagal menghubungkan Database : ', err);
@@ -55,6 +55,67 @@ export const buatTabel = async () => {
   console.log(data);
 };
 
+// Create Data
+export const insertData = async (
+  namaLengkap,
+  nidn,
+  namaPerguruan,
+  username,
+  password,
+) => {
+  try {
+    const db = await getDatabase();
+    await db.transaction(tx => {
+      tx.executeSql(
+        `INSERT INTO AkunUser (namaLengkap, nidn, namaPerguruan, username, password) VALUES (?,?,?,?,?)`,
+        [namaLengkap, nidn, namaPerguruan, username, password],
+        (tx, results) => {
+          if (results.rowsAffected > 0) {
+            console.log('Data berhasil ditambahkan');
+          }
+        },
+        (tx, error) => {
+          console.log('Gagal menambahkan Data : ', error);
+        },
+      );
+    });
+  } catch (err) {
+    console.log(`Error : ${err}`);
+    throw err;
+  }
+};
+
+// Read Data
+export const getData = async () => {
+  try {
+    const db = await getDatabase();
+    return new Promise((resolve, reject) => {
+      db.transaction(tx => {
+        tx.executeSql(
+          `SELECT * FROM AkunUser`,
+          [],
+          (tx, results) => {
+            const rows = results.rows.raw();
+            console.log('Jumlah Data : ', rows.length);
+            rows.map(data => {
+              console.log(`Berhasil tarik Data ${data.namaLengkap}`);
+            });
+
+            resolve(rows);
+          },
+          (tx, error) => {
+            console.log(`Error membaca data dari tabel : ${error}`);
+            reject(error);
+          },
+        );
+      });
+    });
+  } catch (err) {
+    console.log('Error pada fungsi getData : ', err);
+    throw err;
+  }
+};
+
 // cek semua tabel dan jumlah
 export const cekAllTabel = async () => {
   const db = await getDatabase();
@@ -64,8 +125,8 @@ export const cekAllTabel = async () => {
       [],
       (tx, results) => {
         const rows = results.rows.raw();
-        console.log('Cek Table: ', rows);
-        console.log('cek jumlah:', rows.length);
+        // console.log('Cek Table: ', rows);
+        // console.log('cek jumlah:', rows.length);
         rows.map(tabel => {
           console.log(`Nama Tabel : ${tabel.name}`);
         });

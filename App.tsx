@@ -26,12 +26,12 @@ const App = () => {
     getDatabase();
     // buatTabel();
     cekAllTabel();
-    hapusTabel();
+    // hapusTabel();
   }, []);
   return (
     <NavigationContainer>
       <Stack.Navigator
-        initialRouteName="Notifikasi"
+        initialRouteName="Splash"
         screenOptions={{headerShown: false}}>
         <Stack.Screen name="Splash" component={SplashSc} />
         <Stack.Screen name="Splash2" component={SplashSc2} />
