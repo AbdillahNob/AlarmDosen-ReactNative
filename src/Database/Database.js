@@ -56,7 +56,7 @@ export const buatTabel = async () => {
 };
 
 // Create Data
-export const insertData = async (
+export const insertAkun = async (
   namaLengkap,
   nidn,
   namaPerguruan,

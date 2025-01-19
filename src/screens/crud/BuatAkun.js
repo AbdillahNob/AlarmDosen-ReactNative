@@ -15,7 +15,7 @@ import {
 } from '../../utils/responsive';
 import {StatusBar} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
-import {insertData, getData} from '../../Database/Database';
+import {insertAkun, getData} from '../../Database/Database';
 
 const BuatAkun = () => {
   const navigation = useNavigation();
@@ -51,7 +51,7 @@ const BuatAkun = () => {
     ) {
       try {
         if (password == konfirPass) {
-          await insertData(
+          await insertAkun(
             namaLengkap,
             nidn,
             namaPerguruan,
@@ -161,18 +161,27 @@ const BuatAkun = () => {
   };
 
   const validasiInput = (value, label) => {
-    if (label == 'Nama Lengkap') {
-      setNamaLengkap(value);
-    } else if (label == 'Nidn') {
-      setNidn(value);
-    } else if (label == 'Nama Perguruan Tinggi/Institut') {
-      setNamaPerguruan(value);
-    } else if (label == 'Username') {
-      setUsername(value);
-    } else if (label == 'Password') {
-      setPassword(value);
-    } else if (label == 'Konfirmasi Password') {
-      setKonfirPass(value);
+    switch (label) {
+      case 'Nama Lengkap':
+        setNamaLengkap(value);
+        break;
+      case 'Nidn':
+        setNidn(value);
+        break;
+      case 'Nama Perguruan Tinggi/Institut':
+        setNamaPerguruan(value);
+        break;
+      case 'Username':
+        setUsername(value);
+        break;
+      case 'Password':
+        setPassword(value);
+        break;
+      case 'Konfirmasi Password':
+        setKonfirPass(value);
+        break;
+      default:
+        break;
     }
   };
 
