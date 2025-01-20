@@ -147,6 +147,7 @@ const Dashboard = () => {
                     },
                   ],
                 );
+                // Agar bisa langsung refresh Data yg tampil
                 fetch();
               } else {
                 Alert.alert(
@@ -227,6 +228,7 @@ const Dashboard = () => {
                       width: w(65),
                       fontSize: w(4),
                       fontWeight: 'bold',
+                      textTransform: 'capitalize',
                     }}>
                     {item.namaMatkul}
                   </Text>

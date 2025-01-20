@@ -5,8 +5,8 @@ import {
   View,
   TextInput,
   ScrollView,
-  Button,
   Alert,
+  TouchableOpacity,
 } from 'react-native';
 import React, {useState} from 'react';
 import {
@@ -14,15 +14,13 @@ import {
   widthPercentageToDP as w,
 } from '../../utils/responsive';
 import {StatusBar} from 'react-native';
-import Buttons from '../../components/Buttons';
 import {Picker} from '@react-native-picker/picker';
 import {DateTimePickerAndroid} from '@react-native-community/datetimepicker';
-// import {pickDirectory} from 'react-native-document-picker';
-import DocumentPicker, {types} from 'react-native-document-picker';
-import {PermissionsAndroid} from 'react-native';
-import {useNavigation, useRoute} from '@react-navigation/native';
+import {useNavigation, useRoute, StackActions} from '@react-navigation/native';
+import {updateJadwal} from '../../Database/Database';
 
 const EditJadwal = () => {
+  const navigation = useNavigation();
   const route = useRoute();
   const dataMatkul = route.params.dataMatkul;
   const [namaMataKuliah, setNamaMataKuliah] = useState('');
@@ -32,27 +30,62 @@ const EditJadwal = () => {
   const [jamMulai, setJamMulai] = useState('');
   const [jamSelesai, setJamSelesai] = useState('');
   const [tipeJadwal, setTipeJadwal] = useState('');
-  const [nadaDering, setNadaDering] = useState('');
-  const [linkGrup, setLinkGrup] = useState('');
-  const [timePickerAktif, setTimePickerAktif] = useState(false);
+  const [semester, setSemester] = useState('');
+
+  const handleSubmission = async () => {
+    const updateNamaMatkul = namaMataKuliah || dataMatkul.namaMatkul;
+    const updateSemester = semester || dataMatkul.semester;
+    const updateHari = hari || dataMatkul.hari;
+    const updateKelas = kelas || dataMatkul.kelas;
+    const updateRuangan = ruangan || dataMatkul.ruangan;
+    const updateJamMulai = jamMulai || dataMatkul.jamMulai;
+    const updateJamSelesai = jamSelesai || dataMatkul.jamSelesai;
+    const updateTipeJadwal = tipeJadwal || dataMatkul.tipeJadwal;
+
+    try {
+      await updateJadwal(
+        dataMatkul.idMengajar,
+        updateNamaMatkul,
+        updateSemester,
+        updateHari,
+        updateKelas,
+        updateRuangan,
+        updateJamMulai,
+        updateJamSelesai,
+        updateTipeJadwal,
+      );
+      Alert.alert('INFO', 'Berhasil EDIT Jadwal Mengajar', [
+        {
+          text: 'OKE',
+          onPress: () => navigation.dispatch(StackActions.replace('Dashboard')),
+        },
+      ]);
+    } catch (err) {
+      console.log('Fungsi HandleSubmission Gagal : ', err);
+    }
+  };
 
   const input = () => {
     const data = [
       {
         label: 'Nama Mata Kuliah',
-        placeholder: 'Masukkan Nama Mata Kuliah',
+        placeholder: dataMatkul.namaMatkul,
+      },
+      {
+        label: 'Semester',
+        placeholder: dataMatkul.semester,
       },
       {
         label: 'Hari',
-        placeholder: 'Pilih Hari',
+        placeholder: dataMatkul.hari,
       },
       {
         label: 'Kelas',
-        placeholder: 'Masukkan Nama Kelas',
+        placeholder: dataMatkul.kelas,
       },
       {
         label: 'Ruangan',
-        placeholder: 'Masukkan Ruangan',
+        placeholder: dataMatkul.ruangan,
       },
       {
         label: 'Jam Mulai',
@@ -64,17 +97,7 @@ const EditJadwal = () => {
       },
       {
         label: 'Tipe Jadwal',
-        placeholder: 'Pilih Tipe Jadwal',
-      },
-
-      {
-        label: 'Nada Dering',
-        placeholder: 'Pilih Nada Dering',
-      },
-
-      {
-        label: 'Link Group Wa kelas',
-        placeholder: 'Masukkan Link',
+        placeholder: dataMatkul.tipeJadwal,
       },
     ];
 
@@ -87,7 +110,7 @@ const EditJadwal = () => {
     if (label == 'Hari') {
       content = (
         <Picker
-          selectedValue={hari}
+          placeholder={placeholder}
           style={styles.picker}
           onValueChange={itemValue => setHari(itemValue)}>
           <Picker
@@ -100,55 +123,57 @@ const EditJadwal = () => {
           <Picker.Item label="Rabu" value="Rabu" style={{color: 'black'}} />
           <Picker.Item label="Kamis" value="Kamis" style={{color: 'black'}} />
           <Picker.Item label="Jumat" value="Jumat" style={{color: 'black'}} />
+          <Picker.Item label="Sabtu" value="Sabtu" style={{color: 'black'}} />
         </Picker>
       );
-    } else if (label == 'Tipe Jadwal') {
+    } else if (label == 'Tipe Jadwal' || label == 'Semester') {
+      let data = [];
+      if (label == 'Semester') {
+        data = [1, 2, 3, 4, 5, 6, 7];
+      } else {
+        data = ['Utama', 'Tambahan'];
+      }
+
       content = (
         <Picker
-          selectedValue={tipeJadwal}
+          placeholder={placeholder}
           style={styles.picker}
-          onValueChange={itemValue => setTipeJadwal(itemValue)}>
+          onValueChange={itemValue =>
+            label == 'Semester'
+              ? setSemester(itemValue)
+              : setTipeJadwal(itemValue)
+          }>
           <Picker.Item
             label={dataJadwalMatkul(label)}
-            value={dataJadwalMatkul(label)}
+            value=""
             style={{color: 'black'}}
           />
-          <Picker.Item label="Utama" value="Utama" style={{color: 'black'}} />
-          <Picker.Item
-            label="Tambahan"
-            value="Tambahan"
-            style={{color: 'black'}}
-          />
+          {data.map((value, key) => (
+            <Picker.Item
+              key={key}
+              label={value}
+              value={value}
+              style={{color: 'black'}}
+            />
+          ))}
         </Picker>
       );
     } else if (label == 'Jam Mulai' || label == 'Jam Selesai') {
       content = (
         <TextInput
-          value={dataJadwalMatkul(label)}
+          value={label == 'Jam Mulai' ? jamMulai : jamSelesai}
           placeholder={placeholder}
+          placeholderTextColor={'black'}
           keyboardType="default"
           style={styles.textInput}
           onPress={() => validasiDate(label)}
         />
       );
-    } else if (label == 'Nada Dering') {
-      content = (
-        <Button
-          value={dataJadwalMatkul(label)}
-          title="Pilih Nada Dering"
-          onPress={pickMusicFile}
-          style={{
-            backgroundColor: '#0F4473',
-            width: w(5),
-            height: h(2),
-          }}
-        />
-      );
     } else {
       content = (
         <TextInput
-          value={dataJadwalMatkul(label)}
           placeholder={placeholder}
+          placeholderTextColor={'black'}
           style={styles.textInput}
           onChangeText={value => validasiInput(value, label)}
         />
@@ -178,16 +203,6 @@ const EditJadwal = () => {
             alignItems: 'center',
           }}>
           {content}
-          {label == 'Nada Dering' ? (
-            <Text
-              style={{
-                color: 'black',
-                marginLeft: w(2),
-                justifyContent: 'center',
-              }}>
-              {dataJadwalMatkul(label)}
-            </Text>
-          ) : null}
         </View>
       </View>
     );
@@ -216,57 +231,6 @@ const EditJadwal = () => {
     return `${hours}:${minutes} WITA`;
   };
 
-  // Fungsi untuk memilih file audio
-  const pickMusicFile = async () => {
-    const hasPermission = await requestPermission();
-    if (!hasPermission) {
-      Alert.alert('Izin Ditolak', 'Aplikasi tidak bisa mengakses penyimpanan.');
-      return;
-    }
-
-    try {
-      const res = await DocumentPicker.pick({
-        type: [types.audio], // Hanya file audio yang bisa dipilih
-      });
-
-      setNadaDering(res[0].name);
-      Alert.alert('Berhasil', `File terpilih: ${res[0].name}`);
-      console.log(res[0]);
-    } catch (err) {
-      if (DocumentPicker.isCancel(err)) {
-        console.log('Pemilihan file dibatalkan.');
-      } else {
-        console.error(err);
-      }
-    }
-  };
-
-  // Meminta izin di Android
-  const requestPermission = async () => {
-    if (Platform.OS === 'android') {
-      try {
-        const granted = await PermissionsAndroid.requestMultiple([
-          PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
-          PermissionsAndroid.PERMISSIONS.READ_MEDIA_AUDIO,
-          PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE, // Tambahan
-        ]);
-
-        return (
-          granted['android.permission.READ_EXTERNAL_STORAGE'] ===
-            PermissionsAndroid.RESULTS.GRANTED ||
-          granted['android.permission.READ_MEDIA_AUDIO'] ===
-            PermissionsAndroid.RESULTS.GRANTED ||
-          granted['android.permission.WRITE_EXTERNAL_STORAGE'] ===
-            PermissionsAndroid.RESULTS.GRANTED
-        );
-      } catch (err) {
-        console.warn(err);
-        return false;
-      }
-    }
-    return true;
-  };
-
   const validasiInput = (value, label) => {
     if (label == 'Nama Mata Kuliah') {
       setNamaMataKuliah(value);
@@ -274,9 +238,7 @@ const EditJadwal = () => {
       setKelas(value);
     } else if (label == 'Ruangan') {
       setRuangan(value);
-    } else if (label == 'Nada Dering') {
-      setNadaDering(value);
-    } else if (label == 'Link Group Wa kelas') setLinkGrup(value);
+    }
   };
 
   const dataJadwalMatkul = label => {
@@ -294,10 +256,8 @@ const EditJadwal = () => {
       return dataMatkul.jamSelesai;
     } else if (label == 'Tipe Jadwal') {
       return dataMatkul.tipeJadwal;
-    } else if (label == 'Nada Dering') {
-      return dataMatkul.nadaDering;
-    } else if (label == 'Link Group Wa kelas') {
-      return dataMatkul.linkGrup;
+    } else if (label == 'Semester') {
+      return dataMatkul.semester;
     }
   };
 
@@ -329,13 +289,32 @@ const EditJadwal = () => {
             Edit Jadwal Mengajar
           </Text>
           {input()}
+
           <View
             style={{
               alignItems: 'center',
-              marginTop: h(3.6),
               marginBottom: h(4),
+              marginTop: h(3.4),
             }}>
-            <Buttons teks={'Buat'} navigasi={'Dashboard'} />
+            <TouchableOpacity
+              style={{
+                width: w(75),
+                height: h(7),
+                backgroundColor: '#0F4473',
+                justifyContent: 'center',
+                borderRadius: w(8),
+              }}
+              onPress={() => handleSubmission()}>
+              <Text
+                style={{
+                  color: 'white',
+                  textAlign: 'center',
+                  fontSize: w(6),
+                  textTransform: 'uppercase',
+                }}>
+                edit
+              </Text>
+            </TouchableOpacity>
           </View>
         </View>
       </ScrollView>

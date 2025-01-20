@@ -245,12 +245,12 @@ export const getJadwal = async idUser => {
           [idUser],
           (tx, results) => {
             const rows = results.rows.raw();
-            // console.log('Jumlah Data : ', rows.length);
-            rows.map(data => {
-              console.log(
-                `Berhasil tarik Data Jadwal Mengajar dengan idUser : ${data.idUser}`,
-              );
-            });
+            console.log('Jumlah Data Jadwal Mengajar : ', rows.length);
+            // rows.map(data => {
+            //   console.log(
+            //     `Berhasil tarik Data Jadwal Mengajar dengan idUser : ${data.idUser}`,
+            //   );
+            // });
 
             resolve(rows);
           },
@@ -265,6 +265,52 @@ export const getJadwal = async idUser => {
     });
   } catch (err) {
     console.log('Error pada fungsi getData : ', err);
+    throw err;
+  }
+};
+
+// Update Jadwal
+export const updateJadwal = async (
+  idMengajar,
+  namaMatkul,
+  semester,
+  hari,
+  kelas,
+  ruangan,
+  jamMulai,
+  jamSelesai,
+  tipeJadwal,
+) => {
+  try {
+    const db = await getDatabase();
+    await db.transaction(tx => {
+      tx.executeSql(
+        `UPDATE jadwalMengajar SET namaMatkul = ?, semester = ?, hari = ?, kelas = ?, ruangan = ?, jamMulai = ?, jamSelesai = ?, tipeJadwal = ? WHERE idMengajar = ?`,
+        [
+          namaMatkul,
+          semester,
+          hari,
+          kelas,
+          ruangan,
+          jamMulai,
+          jamSelesai,
+          tipeJadwal,
+          idMengajar,
+        ],
+        (tx, results) => {
+          if (results.rowsAffected > 0) {
+            // console.log(`Berhasil Edit Jadwal : ${results}`);
+          }
+        },
+        (tx, error) => {
+          error.map(err => {
+            console.log(`Gagal Edit Jadwal : ${err}`);
+          });
+        },
+      );
+    });
+  } catch (err) {
+    console.log(`updateJadwal Error : ${err}`);
     throw err;
   }
 };

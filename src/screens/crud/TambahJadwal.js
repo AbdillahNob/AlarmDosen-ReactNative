@@ -296,38 +296,32 @@ const TambahJadwal = () => {
             Buat Jadwal Mengajar
           </Text>
           {input()}
+
           <View
             style={{
               alignItems: 'center',
-              marginTop: h(3.6),
               marginBottom: h(4),
+              marginTop: h(3.4),
             }}>
-            <View
+            <TouchableOpacity
               style={{
-                alignItems: 'center',
-                marginBottom: h(4),
-                marginTop: h(3.4),
-              }}>
-              <TouchableOpacity
+                width: w(75),
+                height: h(7),
+                backgroundColor: '#0F4473',
+                justifyContent: 'center',
+                borderRadius: w(8),
+              }}
+              onPress={() => handleSubmission()}>
+              <Text
                 style={{
-                  width: w(75),
-                  height: h(7),
-                  backgroundColor: '#0F4473',
-                  justifyContent: 'center',
-                  borderRadius: w(8),
-                }}
-                onPress={() => handleSubmission()}>
-                <Text
-                  style={{
-                    color: 'white',
-                    textAlign: 'center',
-                    fontSize: w(6),
-                    textTransform: 'uppercase',
-                  }}>
-                  buat
-                </Text>
-              </TouchableOpacity>
-            </View>
+                  color: 'white',
+                  textAlign: 'center',
+                  fontSize: w(6),
+                  textTransform: 'uppercase',
+                }}>
+                buat
+              </Text>
+            </TouchableOpacity>
           </View>
         </View>
       </ScrollView>

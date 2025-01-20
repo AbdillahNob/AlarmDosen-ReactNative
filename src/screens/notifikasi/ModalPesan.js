@@ -160,7 +160,7 @@ const ModalPesan = () => {
     ));
   };
 
-  const sendMessageWa = async (groupId, message) => {
+  const sendMessageWa = async message => {
     try {
       SendIntentAndroid.sendText({
         text: message,
@@ -173,12 +173,12 @@ const ModalPesan = () => {
   };
 
   const aturSentWa = async value => {
-    const grupKelas = 'https://chat.whatsapp.com/IXKCUISiozMISOtGWpBg6t';
-    const grupStafFo = 'https://chat.whatsapp.com/LsIa1zJ3JMVBdCeVsKjpyq';
+    // const grupKelas = 'https://chat.whatsapp.com/IXKCUISiozMISOtGWpBg6t';
+    // const grupStafFo = 'https://chat.whatsapp.com/LsIa1zJ3JMVBdCeVsKjpyq';
     const message = value;
 
-    await sendMessageWa(grupKelas, message);
-    await sendMessageWa(grupStafFo, message);
+    await sendMessageWa(message);
+    await sendMessageWa(message);
   };
 
   return (
