@@ -198,7 +198,9 @@ const Dashboard = () => {
   return (
     <View style={styles.container}>
       <StatusBar backgroundColor={'#0F4473'} barStyle={'light-content'} />
-      <HeaderDashboard idUser={idUser} />
+      {idUser || dataJadwal.length > 0 ? (
+        <HeaderDashboard idUser={idUser} dataJadwal={dataJadwal} />
+      ) : null}
       {headerMainView()}
       <SafeAreaView style={styles.containerScroll}>
         <ScrollView

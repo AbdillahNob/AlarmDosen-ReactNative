@@ -214,9 +214,9 @@ export const getAkunDetail = async idUser => {
           [idUser],
           (tx, results) => {
             const rows = results.rows.raw();
-            console.log('Jumlah Data : ', rows.length);
+            // console.log('Jumlah Data : ', rows);
             rows.map(data => {
-              console.log(`Berhasil tarik Data : ${data.username}`);
+              // console.log(`Berhasil tarik Data : ${data.username}`);
             });
 
             resolve(rows);
@@ -245,10 +245,10 @@ export const getJadwal = async idUser => {
           [idUser],
           (tx, results) => {
             const rows = results.rows.raw();
-            console.log('Jumlah Data : ', rows.length);
+            // console.log('Jumlah Data : ', rows.length);
             rows.map(data => {
               console.log(
-                `Berhasil tarik Data Jadwal Mengajar : ${data.idUser}`,
+                `Berhasil tarik Data Jadwal Mengajar dengan idUser : ${data.idUser}`,
               );
             });
 

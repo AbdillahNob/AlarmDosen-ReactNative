@@ -190,6 +190,7 @@ const TambahJadwal = () => {
         <TextInput
           value={label == 'Jam Mulai' ? jamMulai : jamSelesai}
           placeholder={placeholder}
+          placeholderTextColor={'black'}
           keyboardType="default"
           style={styles.textInput}
           onPress={() => validasiDate(label)}
@@ -199,6 +200,7 @@ const TambahJadwal = () => {
       content = (
         <TextInput
           placeholder={placeholder}
+          placeholderTextColor={'black'}
           style={styles.textInput}
           onChangeText={value => validasiInput(value, label)}
         />

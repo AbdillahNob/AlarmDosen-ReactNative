@@ -14,20 +14,57 @@ import {
 import {useNavigation} from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {getAkunDetail} from '../Database/Database';
-import {SafeAreaView} from 'react-native-safe-area-context';
 
-const HeaderDashboard = ({idUser}) => {
+const HeaderDashboard = ({idUser, dataJadwal}) => {
   const navigation = useNavigation();
-  const [dataUser, setDataUser] = useState();
+  const [dataUser, setDataUser] = useState(null);
+  const [hariIni, setHariIni] = useState([]);
+  const [totalJadwal, setTotalJadwal] = useState(0);
 
   useEffect(() => {
-    const fetch = async idUser => {
-      const hasil = await getAkunDetail(idUser);
-      console.log('cek data detail :', hasil[0]);
-      setDataUser(hasil[0]);
+    const fetchData = async () => {
+      if (idUser) {
+        try {
+          const hasil = await getAkunDetail(idUser);
+          setDataUser(hasil[0] || null);
+        } catch (error) {
+          console.log('Error fetching user data:', error);
+        }
+      }
     };
-    fetch(idUser);
-  }, [idUser]);
+
+    const fetchJadwal = async () => {
+      if (dataJadwal && Array.isArray(dataJadwal)) {
+        const now = new Date();
+        const today = now.getDay();
+        // console.log('Tangkah Jadwal : ', dataJadwal)
+
+        // Pemetaan hari ke angka
+        const hariKeAngka = {
+          Minggu: 0,
+          Senin: 1,
+          Selasa: 2,
+          Rabu: 3,
+          Kamis: 4,
+          Jumat: 5,
+          Sabtu: 6,
+        };
+
+        const jadwalToday = dataJadwal.filter(
+          item => hariKeAngka[item.hari] === today,
+        );
+
+        setHariIni(jadwalToday);
+        setTotalJadwal(dataJadwal.length);
+      } else {
+        setHariIni([]);
+        setTotalJadwal(0);
+      }
+    };
+
+    fetchData();
+    fetchJadwal();
+  }, [idUser, dataJadwal]);
 
   const logout = async () => {
     Alert.alert('INFO', 'Apakah anda yakin ingin Log Out?', [
@@ -36,9 +73,7 @@ const HeaderDashboard = ({idUser}) => {
         text: 'Log Out',
         onPress: async () => {
           try {
-            // Hapus idUser yg aktif
             await AsyncStorage.removeItem('idUser');
-
             Alert.alert('INFO', 'Berhasil Logout', [
               {text: 'OKE', onPress: () => navigation.replace('Login')},
             ]);
@@ -51,25 +86,34 @@ const HeaderDashboard = ({idUser}) => {
   };
 
   const schedule = () => {
-    const data = [
-      {label: 'Jadwal Hari ini', jumlahJadwal: 4},
-      {label: 'Total Jadwal', jumlahJadwal: 20},
-    ];
-
-    return data.map(({label, jumlahJadwal}, key) => (
-      <View
-        key={key}
-        style={{
-          flexDirection: 'column',
-          alignItems: 'center',
-          paddingHorizontal: w(1.5),
-        }}>
-        <Text style={{color: '#ffffff', fontSize: w(4), fontWeight: 'bold'}}>
-          {jumlahJadwal}
-        </Text>
-        <Text style={{color: '#ffffff', fontSize: w(3.2)}}>{label}</Text>
-      </View>
-    ));
+    return (
+      <>
+        <View
+          style={{
+            flexDirection: 'column',
+            alignItems: 'center',
+            paddingHorizontal: w(1.2),
+          }}>
+          <Text style={{color: '#ffffff', fontSize: w(4), fontWeight: 'bold'}}>
+            {hariIni.length}
+          </Text>
+          <Text style={{color: '#ffffff', fontSize: w(3.2)}}>
+            Jadwal Hari ini
+          </Text>
+        </View>
+        <View
+          style={{
+            flexDirection: 'column',
+            alignItems: 'center',
+            paddingHorizontal: w(1.2),
+          }}>
+          <Text style={{color: '#ffffff', fontSize: w(4), fontWeight: 'bold'}}>
+            {totalJadwal}
+          </Text>
+          <Text style={{color: '#ffffff', fontSize: w(3.2)}}>Total Jadwal</Text>
+        </View>
+      </>
+    );
   };
 
   return (
@@ -124,7 +168,7 @@ const HeaderDashboard = ({idUser}) => {
               letterSpacing: w(0.1),
               width: w(70),
             }}>
-            Hai, {dataUser.namaLengkap}
+            Hai, {dataUser ? dataUser.namaLengkap : 'Pengguna'}
           </Text>
           <Text
             style={{
@@ -132,8 +176,9 @@ const HeaderDashboard = ({idUser}) => {
               fontWeight: '300',
               fontSize: w(2.6),
               marginLeft: w(3.5),
+              textTransform: 'capitalize',
             }}>
-            {dataUser.namaPerguruan}
+            dosen {dataUser ? dataUser.namaPerguruan : '-'}
           </Text>
         </View>
         <Image

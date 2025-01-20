@@ -145,12 +145,14 @@ const BuatAkun = () => {
             <TextInput
               placeholder={placeholder}
               style={styles.textInput}
+              placeholderTextColor={'black'}
               onChangeText={value => validasiInput(value, label)}
               secureTextEntry={true}
             />
           ) : (
             <TextInput
               placeholder={placeholder}
+              placeholderTextColor={'black'}
               style={styles.textInput}
               onChangeText={value => validasiInput(value, label)}
             />
