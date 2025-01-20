@@ -6,37 +6,28 @@ import {
   TouchableOpacity,
   Alert,
 } from 'react-native';
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   widthPercentageToDP as w,
   heightPercentageToDP as h,
 } from '../utils/responsive';
 import {useNavigation} from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {getAkunDetail} from '../Database/Database';
+import {SafeAreaView} from 'react-native-safe-area-context';
 
-const HeaderDashboard = () => {
+const HeaderDashboard = ({idUser}) => {
   const navigation = useNavigation();
-  const schedule = () => {
-    const data = [
-      {label: 'Jadwal Hari ini', jumlahJadwal: 4},
-      {label: 'Total Jadwal', jumlahJadwal: 20},
-    ];
+  const [dataUser, setDataUser] = useState();
 
-    return data.map(({label, jumlahJadwal}, key) => (
-      <View
-        key={key}
-        style={{
-          flexDirection: 'column',
-          alignItems: 'center',
-          paddingHorizontal: w(1.5),
-        }}>
-        <Text style={{color: '#ffffff', fontSize: w(4), fontWeight: 'bold'}}>
-          {jumlahJadwal}
-        </Text>
-        <Text style={{color: '#ffffff', fontSize: w(3.2)}}>{label}</Text>
-      </View>
-    ));
-  };
+  useEffect(() => {
+    const fetch = async idUser => {
+      const hasil = await getAkunDetail(idUser);
+      console.log('cek data detail :', hasil[0]);
+      setDataUser(hasil[0]);
+    };
+    fetch(idUser);
+  }, [idUser]);
 
   const logout = async () => {
     Alert.alert('INFO', 'Apakah anda yakin ingin Log Out?', [
@@ -57,6 +48,28 @@ const HeaderDashboard = () => {
         },
       },
     ]);
+  };
+
+  const schedule = () => {
+    const data = [
+      {label: 'Jadwal Hari ini', jumlahJadwal: 4},
+      {label: 'Total Jadwal', jumlahJadwal: 20},
+    ];
+
+    return data.map(({label, jumlahJadwal}, key) => (
+      <View
+        key={key}
+        style={{
+          flexDirection: 'column',
+          alignItems: 'center',
+          paddingHorizontal: w(1.5),
+        }}>
+        <Text style={{color: '#ffffff', fontSize: w(4), fontWeight: 'bold'}}>
+          {jumlahJadwal}
+        </Text>
+        <Text style={{color: '#ffffff', fontSize: w(3.2)}}>{label}</Text>
+      </View>
+    ));
   };
 
   return (
@@ -90,42 +103,54 @@ const HeaderDashboard = () => {
           flexDirection: 'row',
           alignItems: 'center',
           marginTop: h(2),
+          justifyContent: 'space-between',
+          paddingBottom: h(1),
         }}>
-        <Text
+        <View
           style={{
-            color: '#ffffff',
-            fontSize: w(5),
-            fontWeight: 'bold',
-            marginLeft: w(3.5),
-            marginTop: h(-1),
-            textTransform: 'capitalize',
-            letterSpacing: w(0.1),
+            flexDirection: 'column',
+            marginRight: w(-10),
+            marginTop: h(1.2),
           }}>
-          Hai, Abdillah P Al-Iman
-        </Text>
+          <Text
+            style={{
+              color: '#ffffff',
+              fontSize: w(5),
+              fontWeight: 'bold',
+              marginTop: h(2),
+              marginLeft: w(3.5),
+              marginRight: w(-20),
+              textTransform: 'capitalize',
+              letterSpacing: w(0.1),
+              width: w(70),
+            }}>
+            Hai, {dataUser.namaLengkap}
+          </Text>
+          <Text
+            style={{
+              color: '#ffffff',
+              fontWeight: '300',
+              fontSize: w(2.6),
+              marginLeft: w(3.5),
+            }}>
+            {dataUser.namaPerguruan}
+          </Text>
+        </View>
         <Image
           source={require('../assets/images/logoAlarm.png')}
           style={{
             width: w(16),
             height: h(8),
-            marginLeft: w(19),
+            marginRight: w(5.5),
+            marginTop: h(1),
           }}
           resizeMode="cover"
         />
       </View>
-      <Text
-        style={{
-          color: '#ffffff',
-          fontWeight: '300',
-          fontSize: w(2.6),
-          marginLeft: w(3.5),
-          marginTop: h(-2.5),
-        }}>
-        Dosen Universitas Dipa Makassar
-      </Text>
+
       <View
         style={{
-          marginTop: h(5),
+          marginTop: h(3),
           paddingLeft: w(3.5),
           flexDirection: 'row',
           alignItems: 'center',
@@ -149,7 +174,7 @@ const HeaderDashboard = () => {
 
       <View
         style={{
-          top: h(5.2),
+          top: h(4.6),
           alignItems: 'center',
         }}>
         <View
@@ -171,7 +196,8 @@ export default HeaderDashboard;
 const styles = StyleSheet.create({
   header: {
     width: w('100%'),
-    height: h(32),
+    paddingTop: h(5),
+    paddingBottom: h(5),
     backgroundColor: '#0F4473',
     justifyContent: 'center',
   },

@@ -203,6 +203,37 @@ export const getAkun = async () => {
   }
 };
 
+// Read Data Akun Detail
+export const getAkunDetail = async idUser => {
+  try {
+    const db = await getDatabase();
+    return new Promise((resolve, reject) => {
+      db.transaction(tx => {
+        tx.executeSql(
+          `SELECT * FROM AkunUser WHERE idUser = ?`,
+          [idUser],
+          (tx, results) => {
+            const rows = results.rows.raw();
+            console.log('Jumlah Data : ', rows.length);
+            rows.map(data => {
+              console.log(`Berhasil tarik Data : ${data.username}`);
+            });
+
+            resolve(rows);
+          },
+          (tx, error) => {
+            console.log(`Error membaca data dari tabel : ${error}`);
+            reject(error);
+          },
+        );
+      });
+    });
+  } catch (err) {
+    console.log('Error pada fungsi getData : ', err);
+    throw err;
+  }
+};
+
 // Read Data Jadwal
 export const getJadwal = async idUser => {
   try {

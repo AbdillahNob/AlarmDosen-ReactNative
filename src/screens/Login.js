@@ -59,6 +59,7 @@ const Login = () => {
               <TextInput
                 style={styles.textInput}
                 placeholder="Masukkan Username Anda"
+                placeholderTextColor={'black'}
                 keyboardType="default"
                 onChangeText={value => validasiInput(value, label)}
               />
@@ -66,6 +67,7 @@ const Login = () => {
               <TextInput
                 style={styles.textInput}
                 placeholder="Masukkan Password Anda"
+                placeholderTextColor={'black'}
                 secureTextEntry={true}
                 onChangeText={value => validasiInput(value, label)}
               />
