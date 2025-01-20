@@ -20,6 +20,7 @@ import HeaderDashboard from '../components/HeaderDashboard';
 import {useNavigation} from '@react-navigation/native';
 import DocumentPicker, {types} from 'react-native-document-picker';
 import {PermissionsAndroid} from 'react-native';
+import {getJadwal} from '../Database/Database';
 
 const Dashboard = () => {
   const navigasi = useNavigation();
@@ -27,65 +28,19 @@ const Dashboard = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
   const [nadaDering, setNadaDering] = useState('');
-
-  const dataJadwal = [
-    {
-      id: 1,
-      namaMatkul: 'Praktikum Algoritma dan Pemrograman',
-      hari: 'kamis',
-      kelas: '1-TPAL-H',
-      ruangan: 'a101',
-      jamMulai: '09-10',
-      jamSelesai: '11:00',
-      tipeJadwal: 'utama',
-      nadaDering: 'sdsadsad',
-      linkGrup: 'sadsa',
-      ket: true,
-    },
-    {
-      id: 2,
-      namaMatkul: 'Sistem Basis Data',
-      hari: 'senin',
-      kelas: '1-TSMB-A',
-      ruangan: 'b206',
-      jamMulai: '09-10',
-      jamSelesai: '11:00',
-      tipeJadwal: 'utama',
-      nadaDering: 'sdsadsad',
-      linkGrup: 'sadsa',
-      ket: false,
-    },
-    {
-      id: 3,
-      namaMatkul: 'Elektronika Digital',
-      hari: 'rabu',
-      kelas: '1-TSMB-A',
-      ruangan: 'b206',
-      jamMulai: '09-10',
-      jamSelesai: '11:00',
-      tipeJadwal: 'tambahan',
-      nadaDering: 'sdsadsad',
-      linkGrup: 'sadsa',
-      ket: false,
-    },
-    {
-      id: 4,
-      namaMatkul: 'Praktikum Algoritma dan Pemrograman adadsasdsadadsass',
-      hari: 'kamis',
-      kelas: '1-TPAL-H',
-      ruangan: 'a101',
-      jamMulai: '09-10',
-      jamSelesai: '11:00',
-      tipeJadwal: 'utama',
-      nadaDering: 'sdsadsad',
-      linkGrup: 'sadsa',
-      ket: false,
-    },
-  ];
+  const [dataJadwal, setDataJadwal] = useState([]);
 
   useEffect(() => {
-    setJadwal(dataJadwal);
     // console.log(jadwal);
+    const fetch = async () => {
+      try {
+        const hasil = await getJadwal();
+        setDataJadwal(hasil);
+      } catch (error) {
+        console.log(`Gagal Ambil data Jadwal : ${error}`);
+      }
+    };
+    fetch();
   }, []);
 
   const headerMainView = () => {
@@ -256,7 +211,7 @@ const Dashboard = () => {
             paddingLeft: w(2),
             paddingRight: w(2),
           }}>
-          {jadwal.map((item, key) => (
+          {dataJadwal.map((item, key) => (
             <View key={key} style={styles.card}>
               <View
                 style={{
@@ -292,7 +247,7 @@ const Dashboard = () => {
                     <Text
                       style={{
                         color:
-                          item.tipeJadwal == 'utama' ? '#E8304E' : '#0F4473',
+                          item.tipeJadwal == 'Utama' ? '#E8304E' : '#0F4473',
                       }}>
                       {item.tipeJadwal}
                     </Text>
@@ -340,9 +295,9 @@ const Dashboard = () => {
                   style={{
                     color: 'black',
                     opacity: 0.7,
-                    fontSize: w(4),
+                    fontSize: w(3.8),
                     textTransform: 'capitalize',
-                    marginLeft: w(16),
+                    marginLeft: w(8),
                     marginTop: w(4),
                     fontWeight: '500',
                   }}>
@@ -353,9 +308,13 @@ const Dashboard = () => {
                   style={{
                     flexDirection: 'column',
                     alignItems: 'center',
-                    marginRight: w(4.2),
+                    marginRight: w(1),
                   }}>
-                  <Text style={{color: item.ket ? '#00B038' : '#E8304E'}}>
+                  <Text
+                    style={{
+                      color: item.ket ? '#00B038' : '#E8304E',
+                      paddingRight: w(2),
+                    }}>
                     {item.ket ? 'Aktif' : 'Tidak Aktif'}
                   </Text>
 

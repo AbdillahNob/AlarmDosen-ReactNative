@@ -15,7 +15,7 @@ import {
 } from '../../utils/responsive';
 import {StatusBar} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
-import {insertAkun, getData} from '../../Database/Database';
+import {insertAkun, getAkun} from '../../Database/Database';
 
 const BuatAkun = () => {
   const navigation = useNavigation();
@@ -31,7 +31,7 @@ const BuatAkun = () => {
     // Utk cek data" ditabel AkunUser
     const fetchData = async () => {
       try {
-        const hasil = await getData();
+        const hasil = await getAkun();
         setData(hasil);
       } catch (error) {
         console.log(`Gagal AMBIL DATA : ${error}`);

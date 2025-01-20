@@ -22,8 +22,8 @@ export const getDatabase = async () => {
   return await openDb();
 };
 
-// Buat Tabel
-export const buatTabel = async () => {
+// Buat Tabel Akun
+export const buatAkun = async () => {
   try {
     const db = await getDatabase(); //Tunggu getDatabase smpi database selesai dihubungkan
     await db.transaction(tx => {
@@ -38,10 +38,10 @@ export const buatTabel = async () => {
               );`,
         [],
         (tx, results) => {
-          console.log('Berhasil membuat tabel :', results);
+          console.log('Berhasil membuat tabel AkunUser :', results);
         },
         (tx, error) => {
-          console.log('Gagal membuat tabel :', error);
+          console.log('Gagal membuat tabel AkunUser :', error);
         },
       );
     });
@@ -55,7 +55,44 @@ export const buatTabel = async () => {
   // console.log(data);
 };
 
-// Create Data
+// Buat Tabel Jadwal
+export const buatJadwal = async () => {
+  try {
+    const db = await getDatabase(); //Tunggu getDatabase smpi database selesai dihubungkan
+    await db.transaction(tx => {
+      tx.executeSql(
+        `CREATE TABLE IF NOT EXISTS jadwalDosen (
+                idMengajar INTEGER PRIMARY KEY AUTOINCREMENT,
+                namaMatkul TEXT,
+                semester TEXT,
+                hari TEXT,
+                kelas TEXT,
+                ruangan TEXT,
+                jamMulai TEXT,
+                jamSelesai TEXT,
+                tipeJadwal TEXT,
+                aktifkan BOOLEAN DEFAULT 0
+              );`,
+        [],
+        (tx, results) => {
+          console.log('Berhasil membuat tabel Jadwal :', results);
+        },
+        (tx, error) => {
+          console.log('Gagal membuat tabel Jadwal :', error);
+        },
+      );
+    });
+  } catch (error) {
+    console.log(
+      'Error saat inisialiasi database, tampilkan errornya : ',
+      error,
+    );
+    throw error;
+  }
+  // console.log(data);
+};
+
+// Create AKUN
 export const insertAkun = async (
   namaLengkap,
   nidn,
@@ -71,11 +108,11 @@ export const insertAkun = async (
         [namaLengkap, nidn, namaPerguruan, username, password],
         (tx, results) => {
           if (results.rowsAffected > 0) {
-            console.log('Data berhasil ditambahkan');
+            console.log('Akun berhasil ditambahkan');
           }
         },
         (tx, error) => {
-          console.log('Gagal menambahkan Data : ', error);
+          console.log('Gagal menambahkan Akun : ', error);
         },
       );
     });
@@ -85,8 +122,54 @@ export const insertAkun = async (
   }
 };
 
-// Read Data
-export const getData = async () => {
+// Create Jadwal
+export const insertJadwal = async (
+  namaMatkul,
+  semester,
+  hari,
+  kelas,
+  ruangan,
+  jamMulai,
+  jamSelesai,
+  tipeJadwal,
+  aktifkan,
+) => {
+  try {
+    const db = await getDatabase();
+    await db.transaction(tx => {
+      tx.executeSql(
+        `INSERT INTO jadwalDosen (namaMatkul, semester, hari, kelas, ruangan, jamMulai, jamSelesai, tipeJadwal, aktifkan) VALUES (?,?,?,?,?,?,?,?,?);`,
+        [
+          namaMatkul,
+          semester,
+          hari,
+          kelas,
+          ruangan,
+          jamMulai,
+          jamSelesai,
+          tipeJadwal,
+          aktifkan ? 1 : 0,
+        ],
+        (tx, results) => {
+          if (results.rowsAffected > 0) {
+            console.log(`Berhasil tambah Jadwal : ${results}`);
+          }
+        },
+        (tx, error) => {
+          error.map(err => {
+            console.log(`Gagal menambahkan Jadwal : ${err}`);
+          });
+        },
+      );
+    });
+  } catch (err) {
+    console.log(`insertJadwal Error : ${err}`);
+    throw err;
+  }
+};
+
+// Read Data Akun
+export const getAkun = async () => {
   try {
     const db = await getDatabase();
     return new Promise((resolve, reject) => {
@@ -98,7 +181,38 @@ export const getData = async () => {
             const rows = results.rows.raw();
             console.log('Jumlah Data : ', rows.length);
             rows.map(data => {
-              console.log(`Berhasil tarik Data ${data.username}`);
+              console.log(`Berhasil tarik Data : ${data.username}`);
+            });
+
+            resolve(rows);
+          },
+          (tx, error) => {
+            console.log(`Error membaca data dari tabel : ${error}`);
+            reject(error);
+          },
+        );
+      });
+    });
+  } catch (err) {
+    console.log('Error pada fungsi getData : ', err);
+    throw err;
+  }
+};
+
+// Read Data Jadwal
+export const getJadwal = async () => {
+  try {
+    const db = await getDatabase();
+    return new Promise((resolve, reject) => {
+      db.transaction(tx => {
+        tx.executeSql(
+          `SELECT * FROM jadwalDosen`,
+          [],
+          (tx, results) => {
+            const rows = results.rows.raw();
+            console.log('Jumlah Data : ', rows.length);
+            rows.map(data => {
+              console.log(`Berhasil tarik Data : ${data.tipeJadwal}`);
             });
 
             resolve(rows);
@@ -138,12 +252,34 @@ export const cekAllTabel = async () => {
   });
 };
 
+// cek tabel tertentu dan jumlah
+export const cekTabel = async () => {
+  const db = await getDatabase();
+  db.transaction(tx => {
+    tx.executeSql(
+      `PRAGMA table_info(jadwalDosen);`,
+      [],
+      (tx, results) => {
+        const rows = results.rows.raw();
+        // console.log('Cek Table: ', rows);
+        // console.log('cek jumlah:', rows.length);
+        rows.map(tabel => {
+          console.log(`Nama Field : ${tabel.name}`);
+        });
+      },
+      (tx, error) => {
+        console.log(`gagal cek tabel : ${error}`);
+      },
+    );
+  });
+};
+
 // Hapus tabel tertentu
 export const hapusTabel = async () => {
   const db = await openDb();
   db.transaction(tx => {
     tx.executeSql(
-      `DROP TABLE IF EXISTS buatAkun;`,
+      `DROP TABLE IF EXISTS jadwalMengajar`,
       [],
       (tx, results) => {
         console.log('Berhasil Hapus Tabel');

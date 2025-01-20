@@ -14,7 +14,9 @@ import ModalPesan from './src/screens/notifikasi/ModalPesan';
 import Notifikasi from './src/screens/notifikasi/Notifikasi';
 import {
   getDatabase,
-  buatTabel,
+  buatAkun,
+  buatJadwal,
+  cekTabel,
   cekAllTabel,
   hapusTabel,
 } from './src/Database/Database';
@@ -24,9 +26,8 @@ const Stack = createNativeStackNavigator();
 const App = () => {
   useEffect(() => {
     getDatabase();
-    // buatTabel();
+
     cekAllTabel();
-    // hapusTabel();
   }, []);
   return (
     <NavigationContainer>

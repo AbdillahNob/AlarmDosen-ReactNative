@@ -5,8 +5,8 @@ import {
   View,
   TextInput,
   ScrollView,
-  Button,
   Alert,
+  TouchableOpacity,
 } from 'react-native';
 import React, {useState} from 'react';
 import {
@@ -14,24 +14,61 @@ import {
   widthPercentageToDP as w,
 } from '../../utils/responsive';
 import {StatusBar} from 'react-native';
-import Buttons from '../../components/Buttons';
 import {Picker} from '@react-native-picker/picker';
 import {DateTimePickerAndroid} from '@react-native-community/datetimepicker';
-// import {pickDirectory} from 'react-native-document-picker';
-import DocumentPicker, {types} from 'react-native-document-picker';
-import {PermissionsAndroid} from 'react-native';
+import {useNavigation} from '@react-navigation/native';
+import {insertJadwal} from '../../Database/Database';
 
 const TambahJadwal = () => {
   const [namaMataKuliah, setNamaMataKuliah] = useState('');
+  const [semester, setSemester] = useState('');
   const [hari, setHari] = useState('');
   const [kelas, setKelas] = useState('');
   const [ruangan, setRuangan] = useState('');
   const [jamMulai, setJamMulai] = useState('');
   const [jamSelesai, setJamSelesai] = useState('');
   const [tipeJadwal, setTipeJadwal] = useState('');
-  const [nadaDering, setNadaDering] = useState('');
-  const [linkGrup, setLinkGrup] = useState('');
-  const [timePickerAktif, setTimePickerAktif] = useState(false);
+  const [aktifkan, setAktifkan] = useState(false);
+
+  const navigation = useNavigation();
+
+  const handleSubmission = async () => {
+    if (
+      namaMataKuliah &&
+      semester &&
+      hari &&
+      kelas &&
+      ruangan &&
+      jamMulai &&
+      jamSelesai &&
+      tipeJadwal
+    ) {
+      try {
+        await insertJadwal(
+          namaMataKuliah,
+          semester,
+          hari,
+          kelas,
+          ruangan,
+          jamMulai,
+          jamSelesai,
+          tipeJadwal,
+          aktifkan,
+        );
+        Alert.alert('Berhasil Menambah Data Jadwal', '', [
+          {text: 'OKE', onPress: () => navigasi()},
+        ]);
+      } catch (err) {
+        console.log(`Gagal mengirim Data Jadwal baru ${err}`);
+      }
+    } else {
+      Alert.alert('Error Harap semua inputan di isi!');
+    }
+  };
+
+  const navigasi = () => {
+    navigation.navigate('Dashboard');
+  };
 
   const input = () => {
     const data = [
@@ -64,7 +101,7 @@ const TambahJadwal = () => {
         placeholder: 'Masukkan Jam Selesai',
       },
       {
-        label: 'Tipe Kelas',
+        label: 'Tipe Jadwal',
         placeholder: '--- Pilih Tipe Jadwal ---',
       },
     ];
@@ -89,7 +126,7 @@ const TambahJadwal = () => {
           <Picker.Item label="Jumat" value="Jumat" style={{color: 'black'}} />
         </Picker>
       );
-    } else if (label == 'Tipe Kelas' || label == 'Semester') {
+    } else if (label == 'Tipe Jadwal' || label == 'Semester') {
       let data = [];
       if (label == 'Semester') {
         data = [1, 2, 3, 4, 5, 6, 7];
@@ -99,9 +136,13 @@ const TambahJadwal = () => {
 
       content = (
         <Picker
-          selectedValue={tipeJadwal}
+          selectedValue={label == 'Semester' ? semester : tipeJadwal}
           style={styles.picker}
-          onValueChange={itemValue => setTipeJadwal(itemValue)}>
+          onValueChange={itemValue =>
+            label == 'Semester'
+              ? setSemester(itemValue)
+              : setTipeJadwal(itemValue)
+          }>
           <Picker.Item label={placeholder} value="" style={{color: 'black'}} />
           {data.map((value, key) => (
             <Picker.Item
@@ -184,57 +225,6 @@ const TambahJadwal = () => {
     return `${hours}:${minutes} WITA`;
   };
 
-  // Fungsi untuk memilih file audio
-  // const pickMusicFile = async () => {
-  //   const hasPermission = await requestPermission();
-  //   if (!hasPermission) {
-  //     Alert.alert('Izin Ditolak', 'Aplikasi tidak bisa mengakses penyimpanan.');
-  //     return;
-  //   }
-
-  //   try {
-  //     const res = await DocumentPicker.pick({
-  //       type: [types.audio], // Hanya file audio yang bisa dipilih
-  //     });
-
-  //     setNadaDering(res[0].name);
-  //     Alert.alert('Berhasil', `File terpilih: ${res[0].name}`);
-  //     console.log(res[0]);
-  //   } catch (err) {
-  //     if (DocumentPicker.isCancel(err)) {
-  //       console.log('Pemilihan file dibatalkan.');
-  //     } else {
-  //       console.error(err);
-  //     }
-  //   }
-  // };
-
-  // Meminta izin di Android
-  // const requestPermission = async () => {
-  //   if (Platform.OS === 'android') {
-  //     try {
-  //       const granted = await PermissionsAndroid.requestMultiple([
-  //         PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
-  //         PermissionsAndroid.PERMISSIONS.READ_MEDIA_AUDIO,
-  //         PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE, // Tambahan
-  //       ]);
-
-  //       return (
-  //         granted['android.permission.READ_EXTERNAL_STORAGE'] ===
-  //           PermissionsAndroid.RESULTS.GRANTED ||
-  //         granted['android.permission.READ_MEDIA_AUDIO'] ===
-  //           PermissionsAndroid.RESULTS.GRANTED ||
-  //         granted['android.permission.WRITE_EXTERNAL_STORAGE'] ===
-  //           PermissionsAndroid.RESULTS.GRANTED
-  //       );
-  //     } catch (err) {
-  //       console.warn(err);
-  //       return false;
-  //     }
-  //   }
-  //   return true;
-  // };
-
   const validasiInput = (value, label) => {
     if (label == 'Nama Mata Kuliah') {
       setNamaMataKuliah(value);
@@ -242,9 +232,7 @@ const TambahJadwal = () => {
       setKelas(value);
     } else if (label == 'Ruangan') {
       setRuangan(value);
-    } else if (label == 'Nada Dering') {
-      setNadaDering(value);
-    } else if (label == 'Link Group Wa kelas') setLinkGrup(value);
+    }
   };
 
   return (
@@ -281,7 +269,32 @@ const TambahJadwal = () => {
               marginTop: h(3.6),
               marginBottom: h(4),
             }}>
-            <Buttons teks={'Buat'} navigasi={'Dashboard'} />
+            <View
+              style={{
+                alignItems: 'center',
+                marginBottom: h(4),
+                marginTop: h(3.4),
+              }}>
+              <TouchableOpacity
+                style={{
+                  width: w(75),
+                  height: h(7),
+                  backgroundColor: '#0F4473',
+                  justifyContent: 'center',
+                  borderRadius: w(8),
+                }}
+                onPress={() => handleSubmission()}>
+                <Text
+                  style={{
+                    color: 'white',
+                    textAlign: 'center',
+                    fontSize: w(6),
+                    textTransform: 'uppercase',
+                  }}>
+                  buat
+                </Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
       </ScrollView>
