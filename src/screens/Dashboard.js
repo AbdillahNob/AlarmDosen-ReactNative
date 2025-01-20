@@ -19,6 +19,7 @@ import {SafeAreaView} from 'react-native-safe-area-context';
 import HeaderDashboard from '../components/HeaderDashboard';
 import {useNavigation} from '@react-navigation/native';
 import {getJadwal, hapusData} from '../Database/Database';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Dashboard = () => {
   const navigasi = useNavigation();
@@ -26,14 +27,44 @@ const Dashboard = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
   const [dataJadwal, setDataJadwal] = useState([]);
+  const [idUser, setIdUser] = useState('');
 
   useEffect(() => {
     // console.log(jadwal);
-    fetch();
+    checkUserSession();
   }, []);
-  const fetch = async () => {
+
+  useEffect(() => {
+    if (idUser) {
+      fetch(idUser);
+    }
+  }, [idUser]);
+
+  const checkUserSession = async () => {
     try {
-      const hasil = await getJadwal();
+      const storedUserId = await AsyncStorage.getItem('idUser');
+
+      // Jika idUser ditemukan
+      if (storedUserId) {
+        setIdUser(storedUserId);
+      } else {
+        Alert.alert('ERROR', 'Akun Login tidak terdeteksi!', [
+          {
+            text: 'OKE',
+            onPress: () => {
+              navigasi.dispatch(StackActions.replace('Dashboard'));
+            },
+          },
+        ]);
+      }
+    } catch (err) {
+      console.log(`Gagal memuat session: ${err}`);
+    }
+  };
+
+  const fetch = async idUser => {
+    try {
+      const hasil = await getJadwal(idUser);
       setDataJadwal(hasil);
     } catch (error) {
       console.log(`Gagal Ambil data Jadwal : ${error}`);

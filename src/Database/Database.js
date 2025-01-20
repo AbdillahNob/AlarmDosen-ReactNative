@@ -141,7 +141,7 @@ export const insertJadwal = async (
     const db = await getDatabase();
     await db.transaction(tx => {
       tx.executeSql(
-        `INSERT INTO jadwalMengajar (idUser,namaMatkul, semester, hari, kelas, ruangan, jamMulai, jamSelesai, tipeJadwal, aktifkan) VALUES (?,?,?,?,?,?,?,?,?);`,
+        `INSERT INTO jadwalMengajar (idUser, namaMatkul, semester, hari, kelas, ruangan, jamMulai, jamSelesai, tipeJadwal, aktifkan) VALUES (?,?,?,?,?,?,?,?,?,?);`,
         [
           idUser,
           namaMatkul,
@@ -204,25 +204,29 @@ export const getAkun = async () => {
 };
 
 // Read Data Jadwal
-export const getJadwal = async () => {
+export const getJadwal = async idUser => {
   try {
     const db = await getDatabase();
     return new Promise((resolve, reject) => {
       db.transaction(tx => {
         tx.executeSql(
-          `SELECT * FROM jadwalMengajar`,
-          [],
+          `SELECT * FROM jadwalMengajar WHERE idUser = ?`,
+          [idUser],
           (tx, results) => {
             const rows = results.rows.raw();
             console.log('Jumlah Data : ', rows.length);
             rows.map(data => {
-              console.log(`Berhasil tarik Data : ${data.hari}`);
+              console.log(
+                `Berhasil tarik Data Jadwal Mengajar : ${data.idUser}`,
+              );
             });
 
             resolve(rows);
           },
           (tx, error) => {
-            console.log(`Error membaca data dari tabel : ${error}`);
+            console.log(
+              `Error membaca data dari tabel jadwalMengajar : ${error}`,
+            );
             reject(error);
           },
         );

@@ -23,7 +23,7 @@ const Login = () => {
   const [password, setPassword] = useState('');
 
   useEffect(() => {
-    // getAkun();
+    getAkun();
   }, []);
 
   const input = () => {

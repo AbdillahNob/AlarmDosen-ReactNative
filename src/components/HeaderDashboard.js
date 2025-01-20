@@ -45,7 +45,9 @@ const HeaderDashboard = () => {
         text: 'Log Out',
         onPress: async () => {
           try {
+            // Hapus idUser yg aktif
             await AsyncStorage.removeItem('idUser');
+
             Alert.alert('INFO', 'Berhasil Logout', [
               {text: 'OKE', onPress: () => navigation.replace('Login')},
             ]);
@@ -60,7 +62,12 @@ const HeaderDashboard = () => {
   return (
     <View style={styles.header}>
       <View
-        style={{marginLeft: w(4), flexDirection: 'row', alignItems: 'center'}}>
+        style={{
+          marginTop: h(-1),
+          marginLeft: w(4),
+          flexDirection: 'row',
+          alignItems: 'center',
+        }}>
         <TouchableOpacity onPress={() => logout()}>
           <Image
             source={require('../assets/icons/logOut.png')}
@@ -142,7 +149,7 @@ const HeaderDashboard = () => {
 
       <View
         style={{
-          top: h(5.7),
+          top: h(5.2),
           alignItems: 'center',
         }}>
         <View

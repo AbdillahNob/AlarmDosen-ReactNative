@@ -8,7 +8,7 @@ import {
   Alert,
   TouchableOpacity,
 } from 'react-native';
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   heightPercentageToDP as h,
   widthPercentageToDP as w,
@@ -16,8 +16,9 @@ import {
 import {StatusBar} from 'react-native';
 import {Picker} from '@react-native-picker/picker';
 import {DateTimePickerAndroid} from '@react-native-community/datetimepicker';
-import {useNavigation} from '@react-navigation/native';
+import {StackActions, useNavigation} from '@react-navigation/native';
 import {insertJadwal} from '../../Database/Database';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const TambahJadwal = () => {
   const [namaMataKuliah, setNamaMataKuliah] = useState('');
@@ -29,11 +30,39 @@ const TambahJadwal = () => {
   const [jamSelesai, setJamSelesai] = useState('');
   const [tipeJadwal, setTipeJadwal] = useState('');
   const [aktifkan, setAktifkan] = useState(false);
+  const [idUser, setIdUser] = useState('');
 
   const navigation = useNavigation();
+  useEffect(() => {
+    const checkUserSession = async () => {
+      try {
+        const storedUserId = await AsyncStorage.getItem('idUser');
+
+        // Jika idUser ditemukan
+        if (storedUserId) {
+          setIdUser(storedUserId);
+        } else {
+          Alert.alert('ERROR', 'Akun Login tidak terdeteksi!', [
+            {
+              text: 'OKE',
+              onPress: () => {
+                navigation.dispatch(StackActions.replace('Dashboard'));
+              },
+            },
+          ]);
+        }
+      } catch (err) {
+        console.log(`Gagal memuat session: ${err}`);
+      }
+    };
+
+    checkUserSession();
+  }, []);
 
   const handleSubmission = async () => {
+    console.log(idUser);
     if (
+      idUser &&
       namaMataKuliah &&
       semester &&
       hari &&
@@ -45,6 +74,7 @@ const TambahJadwal = () => {
     ) {
       try {
         await insertJadwal(
+          idUser,
           namaMataKuliah,
           semester,
           hari,
@@ -67,7 +97,7 @@ const TambahJadwal = () => {
   };
 
   const navigasi = () => {
-    navigation.navigate('Dashboard');
+    navigation.dispatch(StackActions.replace('Dashboard'));
   };
 
   const input = () => {
