@@ -1,5 +1,5 @@
 import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {StatusBar} from 'react-native';
 import {
   widthPercentageToDP as w,
@@ -7,6 +7,7 @@ import {
 } from '../utils/responsive';
 import {StackActions, useNavigation} from '@react-navigation/native';
 import Buttons from '../components/Buttons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const SplashSc2 = () => {
   const navigation = useNavigation();

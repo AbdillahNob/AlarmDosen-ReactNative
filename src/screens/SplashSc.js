@@ -7,13 +7,28 @@ import {
   widthPercentageToDP as w,
   heightPercentageToDP as h,
 } from '../utils/responsive';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const SplashSc = () => {
   const navigation = useNavigation();
 
   useEffect(() => {
     setTimeout(() => {
-      navigation.dispatch(StackActions.replace('Splash2'));
+      const checkUserSession = async () => {
+        try {
+          const storedUserId = await AsyncStorage.getItem('idUser');
+          if (storedUserId) {
+            // Jika idUser ditemukan, arahkan ke Dashboard
+            navigation.dispatch(StackActions.replace('Dashboard'));
+          } else {
+            navigation.dispatch(StackActions.replace('Splash2'));
+          }
+        } catch (err) {
+          console.log(`Gagal memuat session: ${err}`);
+        }
+      };
+
+      checkUserSession();
     }, 2500);
   });
 

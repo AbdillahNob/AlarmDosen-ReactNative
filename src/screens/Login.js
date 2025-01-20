@@ -13,13 +13,18 @@ import {
   widthPercentageToDP as w,
 } from '../utils/responsive';
 import {StatusBar} from 'react-native';
-import {useNavigation} from '@react-navigation/native';
-import {getDatabase} from '../Database/Database';
+import {StackActions, useNavigation} from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import {getDatabase, getAkun} from '../Database/Database';
 
 const Login = () => {
   const navigation = useNavigation();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+
+  useEffect(() => {
+    // getAkun();
+  }, []);
 
   const input = () => {
     const data = [
@@ -92,10 +97,19 @@ const Login = () => {
         tx.executeSql(
           `SELECT * FROM AkunUser WHERE username = ? AND password = ?`,
           [username, password],
-          (tx, results) => {
+          async (tx, results) => {
+            const user = results.rows.raw();
             if (results.rows.length > 0) {
+              console.log(user[0].idUser);
+
+              // Simpan idUser ke AsyncStorage
+              await AsyncStorage.setItem(
+                'idUser',
+                JSON.stringify(user[0].idUser),
+              );
+
               Alert.alert('INFO', 'Berhasil LOGIN', [
-                {text: 'OKE', onPress: navigasi()},
+                {text: 'OKE', onPress: () => navigasi()},
               ]);
             } else {
               Alert.alert('INFO', 'Username dan Password anda salah!');
@@ -112,7 +126,7 @@ const Login = () => {
   };
 
   const navigasi = () => {
-    navigation.navigate('Dashboard');
+    navigation.dispatch(StackActions.replace('Dashboard'));
   };
 
   return (

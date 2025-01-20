@@ -19,6 +19,7 @@ import {
   cekTabel,
   cekAllTabel,
   hapusTabel,
+  hapusData,
 } from './src/Database/Database';
 
 const Stack = createNativeStackNavigator();

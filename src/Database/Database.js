@@ -61,8 +61,9 @@ export const buatJadwal = async () => {
     const db = await getDatabase(); //Tunggu getDatabase smpi database selesai dihubungkan
     await db.transaction(tx => {
       tx.executeSql(
-        `CREATE TABLE IF NOT EXISTS jadwalDosen (
+        `CREATE TABLE IF NOT EXISTS jadwalMengajar (
                 idMengajar INTEGER PRIMARY KEY AUTOINCREMENT,
+                idUser INTEGER,
                 namaMatkul TEXT,
                 semester TEXT,
                 hari TEXT,
@@ -71,7 +72,8 @@ export const buatJadwal = async () => {
                 jamMulai TEXT,
                 jamSelesai TEXT,
                 tipeJadwal TEXT,
-                aktifkan BOOLEAN DEFAULT 0
+                aktifkan BOOLEAN DEFAULT 0,
+                FOREIGN KEY (idUser) REFERENCES AkunUser (idUser) ON DELETE CASCADE
               );`,
         [],
         (tx, results) => {
@@ -124,6 +126,7 @@ export const insertAkun = async (
 
 // Create Jadwal
 export const insertJadwal = async (
+  idUser,
   namaMatkul,
   semester,
   hari,
@@ -138,8 +141,9 @@ export const insertJadwal = async (
     const db = await getDatabase();
     await db.transaction(tx => {
       tx.executeSql(
-        `INSERT INTO jadwalDosen (namaMatkul, semester, hari, kelas, ruangan, jamMulai, jamSelesai, tipeJadwal, aktifkan) VALUES (?,?,?,?,?,?,?,?,?);`,
+        `INSERT INTO jadwalMengajar (idUser,namaMatkul, semester, hari, kelas, ruangan, jamMulai, jamSelesai, tipeJadwal, aktifkan) VALUES (?,?,?,?,?,?,?,?,?);`,
         [
+          idUser,
           namaMatkul,
           semester,
           hari,
@@ -206,7 +210,7 @@ export const getJadwal = async () => {
     return new Promise((resolve, reject) => {
       db.transaction(tx => {
         tx.executeSql(
-          `SELECT * FROM jadwalDosen`,
+          `SELECT * FROM jadwalMengajar`,
           [],
           (tx, results) => {
             const rows = results.rows.raw();
@@ -236,7 +240,7 @@ export const hapusData = async id => {
     const db = await getDatabase();
     await db.transaction(tx => {
       tx.executeSql(
-        `DELETE FROM jadwalDosen WHERE idMengajar = ?;`,
+        `DELETE FROM jadwalMengajar WHERE idMengajar = ?;`,
         [id],
         (tx, results) => {
           if (results.rowsAffected > 0) {
@@ -251,7 +255,7 @@ export const hapusData = async id => {
       );
     });
   } catch (err) {
-    console.log(`Fungsi hapusData error : ${$err}`);
+    console.log(`Fungsi hapusData error : ${err}`);
   }
 };
 
@@ -282,7 +286,7 @@ export const cekTabel = async () => {
   const db = await getDatabase();
   db.transaction(tx => {
     tx.executeSql(
-      `PRAGMA table_info(jadwalDosen);`,
+      `PRAGMA table_info(jadwalMengajar);`,
       [],
       (tx, results) => {
         const rows = results.rows.raw();
@@ -304,7 +308,7 @@ export const hapusTabel = async () => {
   const db = await openDb();
   db.transaction(tx => {
     tx.executeSql(
-      `DROP TABLE IF EXISTS jadwalMengajar`,
+      `DROP TABLE IF EXISTS jadwalDosen`,
       [],
       (tx, results) => {
         console.log('Berhasil Hapus Tabel');
