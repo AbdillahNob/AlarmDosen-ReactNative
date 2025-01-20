@@ -82,7 +82,7 @@ const Login = () => {
   // PROSES DATA
   const checkLogin = async () => {
     if (!username || !password) {
-      Alert.alert('Username dan Password tidak boleh kosong');
+      Alert.alert('INFO', 'Username dan Password tidak boleh kosong');
       return;
     }
 
@@ -94,11 +94,11 @@ const Login = () => {
           [username, password],
           (tx, results) => {
             if (results.rows.length > 0) {
-              Alert.alert('Berhasil LOGIN', '', [
+              Alert.alert('INFO', 'Berhasil LOGIN', [
                 {text: 'OKE', onPress: navigasi()},
               ]);
             } else {
-              Alert.alert('Username dan Password anda salah!');
+              Alert.alert('INFO', 'Username dan Password anda salah!');
             }
           },
           (tx, error) => {

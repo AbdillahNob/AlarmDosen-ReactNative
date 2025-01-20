@@ -5,7 +5,7 @@ import {
   widthPercentageToDP as w,
   heightPercentageToDP as h,
 } from '../utils/responsive';
-import {useNavigation} from '@react-navigation/native';
+import {StackActions, useNavigation} from '@react-navigation/native';
 import Buttons from '../components/Buttons';
 
 const SplashSc2 = () => {
@@ -77,7 +77,7 @@ const SplashSc2 = () => {
               backgroundColor: '#0F4473',
               borderRadius: w(5),
             }}
-            onPress={() => navigation.navigate('Login')}>
+            onPress={() => navigation.dispatch(StackActions.replace('Login'))}>
             <Text
               style={{
                 textAlign: 'center',

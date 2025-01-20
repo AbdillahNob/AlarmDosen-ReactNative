@@ -55,14 +55,14 @@ const TambahJadwal = () => {
           tipeJadwal,
           aktifkan,
         );
-        Alert.alert('Berhasil Menambah Data Jadwal', '', [
+        Alert.alert('INFO', 'Berhasil Menambah Data Jadwal', [
           {text: 'OKE', onPress: () => navigasi()},
         ]);
       } catch (err) {
         console.log(`Gagal mengirim Data Jadwal baru ${err}`);
       }
     } else {
-      Alert.alert('Error Harap semua inputan di isi!');
+      Alert.alert('INFO', 'Error Harap semua inputan di isi!');
     }
   };
 
@@ -124,6 +124,7 @@ const TambahJadwal = () => {
           <Picker.Item label="Rabu" value="Rabu" style={{color: 'black'}} />
           <Picker.Item label="Kamis" value="Kamis" style={{color: 'black'}} />
           <Picker.Item label="Jumat" value="Jumat" style={{color: 'black'}} />
+          <Picker.Item label="Sabtu" value="Sabtu" style={{color: 'black'}} />
         </Picker>
       );
     } else if (label == 'Tipe Jadwal' || label == 'Semester') {

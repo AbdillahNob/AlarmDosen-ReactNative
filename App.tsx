@@ -26,7 +26,6 @@ const Stack = createNativeStackNavigator();
 const App = () => {
   useEffect(() => {
     getDatabase();
-
     cekAllTabel();
   }, []);
   return (

@@ -18,30 +18,27 @@ import {
 import {SafeAreaView} from 'react-native-safe-area-context';
 import HeaderDashboard from '../components/HeaderDashboard';
 import {useNavigation} from '@react-navigation/native';
-import DocumentPicker, {types} from 'react-native-document-picker';
-import {PermissionsAndroid} from 'react-native';
-import {getJadwal} from '../Database/Database';
+import {getJadwal, hapusData} from '../Database/Database';
 
 const Dashboard = () => {
   const navigasi = useNavigation();
   const [jadwal, setJadwal] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
-  const [nadaDering, setNadaDering] = useState('');
   const [dataJadwal, setDataJadwal] = useState([]);
 
   useEffect(() => {
     // console.log(jadwal);
-    const fetch = async () => {
-      try {
-        const hasil = await getJadwal();
-        setDataJadwal(hasil);
-      } catch (error) {
-        console.log(`Gagal Ambil data Jadwal : ${error}`);
-      }
-    };
     fetch();
   }, []);
+  const fetch = async () => {
+    try {
+      const hasil = await getJadwal();
+      setDataJadwal(hasil);
+    } catch (error) {
+      console.log(`Gagal Ambil data Jadwal : ${error}`);
+    }
+  };
 
   const headerMainView = () => {
     return (
@@ -101,73 +98,42 @@ const Dashboard = () => {
   };
 
   const buttonModal = item => {
-    // Meminta izin di Android
-    const requestPermission = async () => {
-      if (Platform.OS === 'android') {
-        try {
-          const granted = await PermissionsAndroid.requestMultiple([
-            PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
-            PermissionsAndroid.PERMISSIONS.READ_MEDIA_AUDIO,
-            PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE, // Tambahan
-          ]);
-
-          return (
-            granted['android.permission.READ_EXTERNAL_STORAGE'] ===
-              PermissionsAndroid.RESULTS.GRANTED ||
-            granted['android.permission.READ_MEDIA_AUDIO'] ===
-              PermissionsAndroid.RESULTS.GRANTED ||
-            granted['android.permission.WRITE_EXTERNAL_STORAGE'] ===
-              PermissionsAndroid.RESULTS.GRANTED
-          );
-        } catch (err) {
-          console.warn(err);
-          return false;
-        }
-      }
-      return true;
-    };
-
-    // Fungsi untuk memilih file audio
-    const pickMusicFile = async () => {
-      const hasPermission = await requestPermission();
-      if (!hasPermission) {
-        Alert.alert(
-          'Izin Ditolak',
-          'Aplikasi tidak bisa mengakses penyimpanan.',
-        );
-        return;
-      }
-
-      try {
-        const res = await DocumentPicker.pick({
-          type: [types.audio], // Hanya file audio yang bisa dipilih
-        });
-
-        setNadaDering(res[0].name);
-        Alert.alert('Berhasil', `File terpilih: ${res[0].name}`);
-        console.log(res[0]);
-      } catch (err) {
-        if (DocumentPicker.isCancel(err)) {
-          console.log('Pemilihan file dibatalkan.');
-        } else {
-          console.error(err);
-        }
-      }
-    };
-
-    const hapusData = () => {
-      // setJadwal(null);
-      Alert.alert('Berhasil Hapus Data');
+    const deleteData = async ({idMengajar, namaMatkul}) => {
+      Alert.alert('INFO', 'Apakah Anda yakin ingin Hapus', [
+        {text: 'Batal', style: 'Cancel'},
+        {
+          text: 'Hapus',
+          onPress: async () => {
+            try {
+              if (idMengajar) {
+                await hapusData(idMengajar);
+                Alert.alert(
+                  'INFO',
+                  `Berhasil Hapus Mata Kuliah : ${namaMatkul}`,
+                  [
+                    {
+                      text: 'OKE',
+                    },
+                  ],
+                );
+                fetch();
+              } else {
+                Alert.alert(
+                  'INFO',
+                  `idMengajar tidak ditemukan : ${data.idMengajar}`,
+                );
+              }
+            } catch (error) {
+              Alert.alert('ERROR', 'Gagal Menghapus Data');
+              console.log(`Gagal Hapus Data : ${error}`);
+            }
+          },
+        },
+      ]);
     };
 
     const dataMatkul = item;
     const data = [
-      {
-        label: 'atur nada dering alarm',
-        icon: require('../assets/icons/music.png'),
-        link: pickMusicFile,
-      },
-
       {
         label: 'edit jadwal mengajar',
         icon: require('../assets/icons/jadwalSet.png'),
@@ -176,7 +142,6 @@ const Dashboard = () => {
       {
         label: 'hapus jadwal mengajar',
         icon: require('../assets/icons/trash.png'),
-        link: hapusData,
       },
     ];
 
@@ -188,7 +153,7 @@ const Dashboard = () => {
             if (label == 'edit jadwal mengajar') {
               navigasi.navigate(link, {dataMatkul}, setModalVisible(false));
             } else {
-              link();
+              deleteData(dataMatkul);
               setModalVisible(false);
             }
           }}>

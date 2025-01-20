@@ -58,7 +58,7 @@ const BuatAkun = () => {
             username,
             password,
           );
-          Alert.alert('Berhasil Menambahkan Akun', '', [
+          Alert.alert('INFO', 'Berhasil Menambahkan Akun', [
             {text: 'OKE', onPress: () => navigasi()},
           ]);
         } else {

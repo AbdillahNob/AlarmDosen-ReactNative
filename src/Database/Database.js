@@ -212,7 +212,7 @@ export const getJadwal = async () => {
             const rows = results.rows.raw();
             console.log('Jumlah Data : ', rows.length);
             rows.map(data => {
-              console.log(`Berhasil tarik Data : ${data.tipeJadwal}`);
+              console.log(`Berhasil tarik Data : ${data.hari}`);
             });
 
             resolve(rows);
@@ -227,6 +227,31 @@ export const getJadwal = async () => {
   } catch (err) {
     console.log('Error pada fungsi getData : ', err);
     throw err;
+  }
+};
+
+// Hapus Data
+export const hapusData = async id => {
+  try {
+    const db = await getDatabase();
+    await db.transaction(tx => {
+      tx.executeSql(
+        `DELETE FROM jadwalDosen WHERE idMengajar = ?;`,
+        [id],
+        (tx, results) => {
+          if (results.rowsAffected > 0) {
+            console.log(`Berhasil Hapus Data dengan id : ${id}`);
+          } else {
+            console.log(`Data dengan id : ${id} tidak ditemukan`);
+          }
+        },
+        (tx, error) => {
+          console.log(`Gagal Menghapus Data : ${error}`);
+        },
+      );
+    });
+  } catch (err) {
+    console.log(`Fungsi hapusData error : ${$err}`);
   }
 };
 
