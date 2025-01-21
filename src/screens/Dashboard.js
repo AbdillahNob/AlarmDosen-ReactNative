@@ -28,6 +28,7 @@ const Dashboard = () => {
   const [selectedItem, setSelectedItem] = useState(null);
   const [dataJadwal, setDataJadwal] = useState([]);
   const [idUser, setIdUser] = useState('');
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
 
   useEffect(() => {
     // console.log(jadwal);
@@ -195,7 +196,7 @@ const Dashboard = () => {
     );
     setDataJadwal(jadwalBaru);
     const itemToUpdate = jadwalBaru.find(item => item.idMengajar === id);
-    console.log(itemToUpdate);
+    // console.log(itemToUpdate);
 
     try {
       await updateAlarmAktif(id, itemToUpdate.aktifkan);
@@ -207,6 +208,7 @@ const Dashboard = () => {
           itemToUpdate.aktifkan ? 'Aktif' : 'Tidak Aktif'
         }.`,
       );
+      setRefreshTrigger(prev => prev + 1);
     } catch (error) {
       // If update fails, revert the local state
       setDataJadwal(
@@ -222,7 +224,7 @@ const Dashboard = () => {
 
   return (
     <View style={styles.container}>
-      <Notifikasi />
+      <Notifikasi refreshTrigger={refreshTrigger} />
       <StatusBar backgroundColor={'#0F4473'} barStyle={'light-content'} />
       {idUser || dataJadwal.length > 0 ? (
         <HeaderDashboard idUser={idUser} dataJadwal={dataJadwal} />

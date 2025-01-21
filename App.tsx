@@ -38,7 +38,7 @@ const App = () => {
   }, []);
   return (
     <>
-      <Notifikasi />
+      {/* <Notifikasi /> */}
       <NavigationContainer>
         <Stack.Navigator
           initialRouteName="Splash"

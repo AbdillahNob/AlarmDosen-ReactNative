@@ -10,7 +10,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {getJadwal} from '../../Database/Database';
 import ModalPesan from './ModalPesan';
 
-const Notifikasi = () => {
+const Notifikasi = ({refreshTrigger}) => {
   const [idUser, setIdUser] = useState('');
   const [dataJadwal, setDataJadwal] = useState([]);
 
@@ -48,7 +48,7 @@ const Notifikasi = () => {
     if (idUser) {
       fetchJadwal(idUser);
     }
-  }, [idUser]);
+  }, [refreshTrigger, idUser]);
 
   useEffect(() => {
     if (dataJadwal.length > 0) {
@@ -169,7 +169,7 @@ const Notifikasi = () => {
       ];
 
       for (const {label, time, jenisModal} of alarmTimes) {
-        if (time > now) {
+        if (time >= now) {
           await notifee.createTriggerNotification(
             {
               title: '⏰ Alarm Berbunyi!',
