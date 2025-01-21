@@ -14,48 +14,57 @@ import {
   widthPercentageToDP as w,
   heightPercentageToDP as h,
 } from '../../utils/responsive';
-import {useNavigation} from '@react-navigation/native';
 import SendIntentAndroid from 'react-native-send-intent';
 
 const ModalPesan = ({dataModal, dataModalJenis}) => {
-  const navigasi = useNavigation();
   const [modalVisible, setModalVisible] = useState(true);
   const [modalVisibleDetail, setModalVisibleDetail] = useState(false);
   const [jenisModal, setJenisModal] = useState(null);
+  const [dataModalDetail, setDataModalDetail] = useState(null);
 
   // const terimaJenisModal = route.params.jenisModal;
   const terimaJenisModal = dataModalJenis;
+  const terimaDataModal = dataModal[0];
 
   useEffect(() => {
     setJenisModal(terimaJenisModal);
-    console.log(dataModal);
+    setDataModalDetail(terimaDataModal);
+    console.log('DataModal yang ditangkap : ', dataModal);
     // console.log(jenisModal);
   }, []);
 
   const deskripsi = () => {
     const data = [
-      {tipe: 'hari', value: 'kamis'},
-      {tipe: 'ruangan', value: 'A103'},
-      {tipe: 'kelas', value: '1-TPAL-H'},
+      {value: dataModal.namaMatkul},
+      {label: 'hari', value: dataModal.hari},
+      {label: 'ruangan', value: dataModal.ruangan},
+      {label: 'kelas', value: dataModal.kelas},
     ];
-
-    return data.map(({tipe, value}, key) => (
-      <View key={key} style={{}}>
+    return data.map(({label, value}, key) => (
+      <View key={key} style={{alignItems: 'flex-start'}}>
         <Text
           style={{
             color: 'black',
-            fontWeight: 'medium',
-            marginBottom: h(1),
-            textTransform: 'capitalize',
+            fontWeight: 'bold',
+            marginBottom: h(1.5),
+            textAlign: 'center',
+            fontSize: w(4.8),
           }}>
-          {tipe} :
-          <Text
-            style={{
-              textTransform: tipe == 'kelas' ? 'uppercase' : 'capitalize',
-            }}>
-            {' '}
-            {value}
-          </Text>
+          {label ? (
+            <Text
+              style={{
+                color: 'black',
+                fontWeight: 'medium',
+                marginBottom: h(1.5),
+                textAlign: 'left',
+                fontSize: w(4),
+                textTransform: 'capitalize',
+              }}>
+              {label} : {value}
+            </Text>
+          ) : (
+            value
+          )}
         </Text>
       </View>
     ));
@@ -216,8 +225,9 @@ const ModalPesan = ({dataModal, dataModalJenis}) => {
                   fontWeight: 'bold',
                   color: 'black',
                   TextAlign: 'center',
+                  textTransform: 'capitalize',
                 }}>
-                09:00-12:00 Wita
+                {dataModal.jamMulai} - {dataModal.jamSelesai}
               </Text>
               <View
                 style={{
@@ -228,16 +238,12 @@ const ModalPesan = ({dataModal, dataModalJenis}) => {
                   marginBottom: h(1.5),
                 }}
               />
-              <View style={{marginBottom: h(1)}}>
-                <Text
-                  style={{
-                    color: 'black',
-                    fontWeight: 'bold',
-                    marginBottom: h(1.5),
-                    textAlign: 'center',
-                  }}>
-                  Praktikum Algoritma dan Pemrograman
-                </Text>
+              <View
+                style={{
+                  marginBottom: h(1),
+                  marginLeft: w(7),
+                  marginRight: w(7),
+                }}>
                 {deskripsi()}
               </View>
               {button('sekarang')}
@@ -277,7 +283,7 @@ const ModalPesan = ({dataModal, dataModalJenis}) => {
                   color: 'black',
                   TextAlign: 'center',
                 }}>
-                09:00-12:00 Wita
+                {dataModal.jamMulai} - {dataModal.jamSelesai}
               </Text>
               <View
                 style={{
@@ -288,16 +294,12 @@ const ModalPesan = ({dataModal, dataModalJenis}) => {
                   marginBottom: h(1.5),
                 }}
               />
-              <View style={{marginBottom: h(1)}}>
-                <Text
-                  style={{
-                    color: 'black',
-                    fontWeight: 'bold',
-                    marginBottom: h(1.5),
-                    textAlign: 'center',
-                  }}>
-                  Praktikum Algoritma dan Pemrograman
-                </Text>
+              <View
+                style={{
+                  marginBottom: h(1),
+                  marginLeft: w(7),
+                  marginRight: w(7),
+                }}>
                 {deskripsi()}
               </View>
               {button(jenisModal)}
