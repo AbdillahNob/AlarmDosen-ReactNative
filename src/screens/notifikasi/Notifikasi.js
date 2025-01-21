@@ -13,6 +13,9 @@ import ModalPesan from './ModalPesan';
 const Notifikasi = ({refreshTrigger}) => {
   const [idUser, setIdUser] = useState('');
   const [dataJadwal, setDataJadwal] = useState([]);
+  const [showModal, setShowModal] = useState(false);
+  const [dataModal, setDataModal] = useState(null);
+  const [dataModalJenis, setDataModalJenis] = useState(null);
 
   useEffect(() => {
     const initializeNotification = async () => {
@@ -25,22 +28,63 @@ const Notifikasi = ({refreshTrigger}) => {
 
     // Foreground event listener
     const unsubscribeForeground = notifee.onForegroundEvent(
-      ({type, detail}) => {
+      async ({type, detail}) => {
         if (type === EventType.ACTION_PRESS) {
+          const item = detail.notification.data?.item;
           const jenisModal = detail.notification.data?.jenisModal;
+          // console.log('Jadwal yg sedang aktif alarmnya', item);
+
           if (detail.pressAction.id === 'stop') {
-            stopAlarm();
-            <ModalPesan jenisModalS={jenisModal} />;
+            await stopAlarm();
+            setDataModal(item);
+            setDataModalJenis(jenisModal);
+            setShowModal(true);
           } else if (detail.pressAction.id === 'open_modal') {
-            stopAlarm();
-            <ModalPesan jenisModalS={jenisModal} />;
+            await stopAlarm();
+            setDataModal(item);
+            setDataModalJenis(jenisModal);
+            setShowModal(true);
           }
+        }
+      },
+    );
+
+    const unsubscribeBackground = notifee.onBackgroundEvent(
+      async ({type, detail}) => {
+        try {
+          if (type === EventType.ACTION_PRESS) {
+            const item = detail.notification.data?.item;
+            const jenisModal = detail.notification.data?.jenisModal;
+            // console.log('Jadwal yg sedang aktif alarmnya', item);
+
+            if (!item || !jenisModal) {
+              console.log(
+                'Data dari jadwal yg aktif tidak ada atau jenisModal tidak ada !',
+              );
+              return;
+            }
+
+            if (detail.pressAction.id === 'stop') {
+              await stopAlarm();
+              setDataModal(item);
+              setDataModalJenis(jenisModal);
+              setShowModal(true);
+            } else if (detail.pressAction.id === 'open_modal') {
+              await stopAlarm();
+              setDataModal(item);
+              setDataModalJenis(jenisModal);
+              setShowModal(true);
+            }
+          }
+        } catch (error) {
+          console.log('Notifee onBackgroundEvet  error : ', error);
         }
       },
     );
 
     return () => {
       unsubscribeForeground();
+      unsubscribeBackground;
     };
   }, []);
 
@@ -201,6 +245,7 @@ const Notifikasi = ({refreshTrigger}) => {
               },
               data: {
                 jenisModal: jenisModal,
+                item: item,
               },
             },
             {
@@ -218,11 +263,21 @@ const Notifikasi = ({refreshTrigger}) => {
   };
 
   const stopAlarm = async () => {
-    await notifee.cancelAllNotifications();
-    console.log('All notifications canceled.');
+    try {
+      await notifee.cancelAllNotifications();
+      console.log('All notifications canceled.');
+    } catch (error) {
+      console.log('Stop Alarm error : ', error);
+    }
   };
 
-  return null;
+  return (
+    <>
+      {showModal && (
+        <ModalPesan dataModal={dataModal} dataModalJenis={dataModalJenis} />
+      )}
+    </>
+  );
 };
 
 export default Notifikasi;

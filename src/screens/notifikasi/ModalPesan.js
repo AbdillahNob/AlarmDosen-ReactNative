@@ -16,20 +16,19 @@ import {
 } from '../../utils/responsive';
 import {useNavigation} from '@react-navigation/native';
 import SendIntentAndroid from 'react-native-send-intent';
-// import {useRoute} from '@react-navigation/native';
 
-const ModalPesan = ({jenisModalS}) => {
-  const route = useRoute();
+const ModalPesan = ({dataModal, dataModalJenis}) => {
   const navigasi = useNavigation();
   const [modalVisible, setModalVisible] = useState(true);
   const [modalVisibleDetail, setModalVisibleDetail] = useState(false);
   const [jenisModal, setJenisModal] = useState(null);
 
   // const terimaJenisModal = route.params.jenisModal;
-  const terimaJenisModal = jenisModalS;
+  const terimaJenisModal = dataModalJenis;
 
   useEffect(() => {
     setJenisModal(terimaJenisModal);
+    console.log(dataModal);
     // console.log(jenisModal);
   }, []);
 
@@ -126,7 +125,6 @@ const ModalPesan = ({jenisModalS}) => {
   const closeModal = () => {
     setModalVisible(false);
     setModalVisibleDetail(false);
-    navigasi.goBack();
   };
 
   const openModalDetail = () => {
@@ -170,7 +168,6 @@ const ModalPesan = ({jenisModalS}) => {
         type: SendIntentAndroid.TEXT_PLAIN,
         packageName: 'com.whatsapp',
       });
-      navigasi.goBack();
     } catch (err) {
       console.log(err);
     }
@@ -186,7 +183,7 @@ const ModalPesan = ({jenisModalS}) => {
   };
 
   return (
-    <View style={{backgroundColor: '#0F4473', flex: 1}}>
+    <>
       <StatusBar backgroundColor={'#0F4473'} barStyle={'light-content'} />
       {jenisModal == 'sekarang' ? (
         <Modal
@@ -338,7 +335,7 @@ const ModalPesan = ({jenisModalS}) => {
           </View>
         </Modal>
       ) : null}
-    </View>
+    </>
   );
 };
 
