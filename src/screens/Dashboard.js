@@ -18,12 +18,11 @@ import {
 import {SafeAreaView} from 'react-native-safe-area-context';
 import HeaderDashboard from '../components/HeaderDashboard';
 import {useNavigation} from '@react-navigation/native';
-import {getJadwal, hapusData} from '../Database/Database';
+import {getJadwal, hapusData, updateAlarmAktif} from '../Database/Database';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Dashboard = () => {
   const navigasi = useNavigation();
-  const [jadwal, setJadwal] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
   const [dataJadwal, setDataJadwal] = useState([]);
@@ -111,14 +110,6 @@ const Dashboard = () => {
     );
   };
 
-  const aturAktif = id => {
-    let jadwalBaru = jadwal.map(item =>
-      item.id === id ? {...item, ket: !item.ket} : item,
-    );
-    setJadwal(jadwalBaru);
-    console.log(jadwalBaru);
-  };
-
   const openModal = item => {
     setSelectedItem(item);
     setModalVisible(true);
@@ -129,7 +120,7 @@ const Dashboard = () => {
   };
 
   const buttonModal = item => {
-    const deleteData = async ({idMengajar, namaMatkul}) => {
+    const deleteData = async ({idMengajar, namaMatkul, idUser}) => {
       Alert.alert('INFO', 'Apakah Anda yakin ingin Hapus', [
         {text: 'Batal', style: 'Cancel'},
         {
@@ -138,6 +129,7 @@ const Dashboard = () => {
             try {
               if (idMengajar) {
                 await hapusData(idMengajar);
+
                 Alert.alert(
                   'INFO',
                   `Berhasil Hapus Mata Kuliah : ${namaMatkul}`,
@@ -148,7 +140,7 @@ const Dashboard = () => {
                   ],
                 );
                 // Agar bisa langsung refresh Data yg tampil
-                fetch();
+                fetch(idUser);
               } else {
                 Alert.alert(
                   'INFO',
@@ -194,6 +186,37 @@ const Dashboard = () => {
         </TouchableOpacity>
       </View>
     ));
+  };
+
+  const aturAktif = async id => {
+    let jadwalBaru = dataJadwal.map(item =>
+      item.idMengajar === id ? {...item, aktifkan: !item.aktifkan} : item,
+    );
+    setDataJadwal(jadwalBaru);
+    const itemToUpdate = jadwalBaru.find(item => item.idMengajar === id);
+    console.log(itemToUpdate);
+
+    try {
+      await updateAlarmAktif(id, itemToUpdate.aktifkan);
+      Alert.alert(
+        'INFO',
+        `Status Aktivasi Alarm ${
+          itemToUpdate.namaMatkul
+        } berhasil diperbarui menjadi ${
+          itemToUpdate.aktifkan ? 'Aktif' : 'Tidak Aktif'
+        }.`,
+      );
+    } catch (error) {
+      // If update fails, revert the local state
+      setDataJadwal(
+        dataJadwal.map(item =>
+          item.idMengajar === id ? {...item, aktifkan: !item.aktifkan} : item,
+        ),
+      );
+
+      Alert.alert('ERROR', 'Gagal memperbarui status Aktivasi Alarm.');
+      console.error(`Error updating status: ${error}`);
+    }
   };
 
   return (
@@ -312,18 +335,18 @@ const Dashboard = () => {
                   }}>
                   <Text
                     style={{
-                      color: item.ket ? '#00B038' : '#E8304E',
+                      color: item.aktifkan ? '#00B038' : '#E8304E',
                       paddingRight: w(2),
                     }}>
-                    {item.ket ? 'Aktif' : 'Tidak Aktif'}
+                    {item.aktifkan ? 'Aktif' : 'Tidak Aktif'}
                   </Text>
 
                   <Switch
                     trackColor={{false: '#767577', true: '#E8304E'}} // Warna track
-                    thumbColor={item.ket ? '#f5dd4b' : '#f4f3f4'} // Warna tombol
+                    thumbColor={item.aktifkan ? '#f5dd4b' : '#f4f3f4'} // Warna tombol
                     ios_backgroundColor="#3e3e3e" // Warna background untuk iOS
-                    onValueChange={() => aturAktif(item.id)} // Fungsi saat switch berubah
-                    value={item.ket} // Nilai switch (true/false)
+                    onValueChange={() => aturAktif(item.idMengajar)} // Fungsi saat switch berubah
+                    value={item.aktifkan ? true : false} // Nilai switch (true/false)
                   />
                 </View>
               </View>

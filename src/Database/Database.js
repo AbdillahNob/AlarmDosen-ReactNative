@@ -248,7 +248,7 @@ export const getJadwal = async idUser => {
             console.log('Jumlah Data Jadwal Mengajar : ', rows.length);
             // rows.map(data => {
             //   console.log(
-            //     `Berhasil tarik Data Jadwal Mengajar dengan idUser : ${data.idUser}`,
+            //     `Berhasil tarik Data Jadwal Mengajar dengan idUser : ${data.aktifkan}`,
             //   );
             // });
 
@@ -315,6 +315,26 @@ export const updateJadwal = async (
   }
 };
 
+// Update
+export const updateAlarmAktif = async (idMengajar, aktifkan) => {
+  try {
+    const db = await getDatabase();
+    await db.transaction(tx => {
+      tx.executeSql(
+        `UPDATE jadwalMengajar SET aktifkan = ? WHERE idMengajar = ?`,
+        [aktifkan ? 1 : 0, idMengajar],
+        (tx, results) => {
+          console.log(`DEBUG Berhasil Edit Aktivasi Alarm : ${results}`);
+        },
+        (tx, error) => {
+          console.log(`Error mengedit aktivasi Alarm : ${error}`);
+        },
+      );
+    });
+  } catch (err) {
+    console.error('Error updating status:', JSON.stringify(err, null, 2));
+  }
+};
 // Hapus Data
 export const hapusData = async id => {
   try {
