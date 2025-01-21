@@ -16,6 +16,7 @@ import {StatusBar} from 'react-native';
 import {StackActions, useNavigation} from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {getDatabase, getAkun} from '../Database/Database';
+import Notifikasi from './notifikasi/Notifikasi';
 
 const Login = () => {
   const navigation = useNavigation();
@@ -133,6 +134,7 @@ const Login = () => {
 
   return (
     <View style={styles.container}>
+      <Notifikasi />
       <StatusBar translucent={true} backgroundColor={'transparent'} />
       <View style={{position: 'absolute'}}>
         <Image

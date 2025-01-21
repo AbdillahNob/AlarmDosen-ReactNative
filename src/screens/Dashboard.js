@@ -20,6 +20,7 @@ import HeaderDashboard from '../components/HeaderDashboard';
 import {useNavigation} from '@react-navigation/native';
 import {getJadwal, hapusData, updateAlarmAktif} from '../Database/Database';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Notifikasi from './notifikasi/Notifikasi';
 
 const Dashboard = () => {
   const navigasi = useNavigation();
@@ -47,11 +48,11 @@ const Dashboard = () => {
       if (storedUserId) {
         setIdUser(storedUserId);
       } else {
-        Alert.alert('ERROR', 'Akun Login tidak terdeteksi!', [
+        Alert.alert('ERROR', 'Akun User tidak terdeteksi!', [
           {
             text: 'OKE',
             onPress: () => {
-              navigasi.dispatch(StackActions.replace('Dashboard'));
+              navigasi.dispatch(StackActions.replace('Login'));
             },
           },
         ]);
@@ -221,6 +222,7 @@ const Dashboard = () => {
 
   return (
     <View style={styles.container}>
+      <Notifikasi />
       <StatusBar backgroundColor={'#0F4473'} barStyle={'light-content'} />
       {idUser || dataJadwal.length > 0 ? (
         <HeaderDashboard idUser={idUser} dataJadwal={dataJadwal} />
@@ -320,11 +322,11 @@ const Dashboard = () => {
                     opacity: 0.7,
                     fontSize: w(3.8),
                     textTransform: 'capitalize',
-                    marginLeft: w(8),
+                    marginLeft: w(6.5),
                     marginTop: w(4),
                     fontWeight: '500',
                   }}>
-                  Jadwal: {item.jamMulai} - {item.jamSelesai}
+                  Jadwal: {item.jamMulai} - {item.jamSelesai} wita
                 </Text>
 
                 <View

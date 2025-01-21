@@ -16,16 +16,17 @@ import {
 } from '../../utils/responsive';
 import {useNavigation} from '@react-navigation/native';
 import SendIntentAndroid from 'react-native-send-intent';
-import {useRoute} from '@react-navigation/native';
+// import {useRoute} from '@react-navigation/native';
 
-const ModalPesan = () => {
+const ModalPesan = ({jenisModalS}) => {
   const route = useRoute();
   const navigasi = useNavigation();
   const [modalVisible, setModalVisible] = useState(true);
   const [modalVisibleDetail, setModalVisibleDetail] = useState(false);
   const [jenisModal, setJenisModal] = useState(null);
 
-  const terimaJenisModal = route.params.jenisModal;
+  // const terimaJenisModal = route.params.jenisModal;
+  const terimaJenisModal = jenisModalS;
 
   useEffect(() => {
     setJenisModal(terimaJenisModal);
@@ -161,12 +162,15 @@ const ModalPesan = () => {
   };
 
   const sendMessageWa = async message => {
+    setModalVisible(false);
+    setModalVisibleDetail(false);
     try {
       SendIntentAndroid.sendText({
         text: message,
         type: SendIntentAndroid.TEXT_PLAIN,
         packageName: 'com.whatsapp',
       });
+      navigasi.goBack();
     } catch (err) {
       console.log(err);
     }
