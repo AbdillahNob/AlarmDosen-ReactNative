@@ -22,6 +22,7 @@ const Notifikasi = ({refreshTrigger}) => {
       await requestPermissionNotifee();
       await createNotificationChannel();
       await cekUserSession();
+      await cekDataStorage();
     };
 
     initializeNotification();
@@ -32,18 +33,17 @@ const Notifikasi = ({refreshTrigger}) => {
         if (type === EventType.ACTION_PRESS) {
           const item = detail.notification.data?.item;
           const jenisModal = detail.notification.data?.jenisModal;
-          // console.log('Jadwal yg sedang aktif alarmnya', item);
 
+          if (!item || !jenisModal) {
+            console.log(
+              'Data dari jadwal yg aktif tidak ada atau jenisModal tidak ada !',
+            );
+            return;
+          }
           if (detail.pressAction.id === 'stop') {
-            await stopAlarm();
-            setDataModal(item);
-            setDataModalJenis(jenisModal);
-            setShowModal(true);
+            await handleAlarmAction(item, jenisModal);
           } else if (detail.pressAction.id === 'open_modal') {
-            await stopAlarm();
-            setDataModal(item);
-            setDataModalJenis(jenisModal);
-            setShowModal(true);
+            await handleAlarmAction(item, jenisModal);
           }
         }
       },
@@ -63,17 +63,10 @@ const Notifikasi = ({refreshTrigger}) => {
               );
               return;
             }
-
             if (detail.pressAction.id === 'stop') {
-              await stopAlarm();
-              setDataModal(item);
-              setDataModalJenis(jenisModal);
-              setShowModal(true);
+              await handleAlarmAction(item, jenisModal);
             } else if (detail.pressAction.id === 'open_modal') {
-              await stopAlarm();
-              setDataModal(item);
-              setDataModalJenis(jenisModal);
-              setShowModal(true);
+              await handleAlarmAction(item, jenisModal);
             }
           }
         } catch (error) {
@@ -141,6 +134,21 @@ const Notifikasi = ({refreshTrigger}) => {
       setDataJadwal(hasil);
     } catch (err) {
       console.error('Error fetching schedule:', err);
+    }
+  };
+
+  const cekDataStorage = async () => {
+    try {
+      const storedData = await AsyncStorage.getItem('dataModalStorage');
+      const storedJenis = await AsyncStorage.getItem('jenisModalStorage');
+
+      if (storedData && storedJenis) {
+        setDataModal(JSON.parse(storedData));
+        setDataModalJenis(JSON.parse(storedJenis));
+        setShowModal(true);
+      }
+    } catch (err) {
+      console.error('Error loading stored modal data:', err);
     }
   };
 
@@ -260,6 +268,18 @@ const Notifikasi = ({refreshTrigger}) => {
       console.log(`Jadwal Alarm 15 Menit Sblm: ${secondNotificationTime}`);
       console.log(`Jadwal Alarm Asli: ${alarmDate}`);
     }
+  };
+
+  const handleAlarmAction = async (item, jenisModal) => {
+    await stopAlarm();
+
+    // Apabila Notifikasi Bunyi, utk menghindari create ulang Async Storage setelah apliksai di tutup dilatar belakang
+    await AsyncStorage.setItem('dataModalStorage', JSON.stringify(item));
+    await AsyncStorage.setItem('jenisModalStorage', JSON.stringify(jenisModal));
+
+    setDataModal(item);
+    setDataModalJenis(jenisModal);
+    setShowModal(true);
   };
 
   const stopAlarm = async () => {

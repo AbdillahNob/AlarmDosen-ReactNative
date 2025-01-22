@@ -15,6 +15,7 @@ import {
   heightPercentageToDP as h,
 } from '../../utils/responsive';
 import SendIntentAndroid from 'react-native-send-intent';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const ModalPesan = ({dataModal, dataModalJenis}) => {
   const [modalVisible, setModalVisible] = useState(true);
@@ -22,16 +23,30 @@ const ModalPesan = ({dataModal, dataModalJenis}) => {
   const [jenisModal, setJenisModal] = useState(null);
   const [dataModalDetail, setDataModalDetail] = useState(null);
 
-  // const terimaJenisModal = route.params.jenisModal;
-  const terimaJenisModal = dataModalJenis;
-  const terimaDataModal = dataModal[0];
-
   useEffect(() => {
-    setJenisModal(terimaJenisModal);
-    setDataModalDetail(terimaDataModal);
-    console.log('DataModal yang ditangkap : ', dataModal);
-    // console.log(jenisModal);
+    setJenisModal(dataModalJenis);
+    checkAsyncStorage();
   }, []);
+
+  const checkAsyncStorage = async () => {
+    const TdataModalStorage = await AsyncStorage.getItem('dataModalStorage');
+    const TjenisModalStorage = await AsyncStorage.getItem('jenisModalStorage');
+    console.log('Modal Tangkap Nilai : ', TdataModalStorage);
+    console.log('Modal tangkap Jenis : ', TjenisModalStorage);
+
+    AsyncStorage.removeItem('showModal');
+    await AsyncStorage.removeItem('dataModalStorage');
+    await AsyncStorage.removeItem('jenisModalStorage');
+
+    console.log(
+      'Berhasil hapus data Notifikasi dari AsyncStorage: ',
+      TdataModalStorage,
+    );
+    console.log(
+      'Berhasil hapus Jenis Modal Notifikasi dari AsyncStorage: ',
+      TjenisModalStorage,
+    );
+  };
 
   const deskripsi = () => {
     const data = [

@@ -44,12 +44,12 @@ const Dashboard = () => {
   const checkUserSession = async () => {
     try {
       const storedUserId = await AsyncStorage.getItem('idUser');
-
-      // Jika idUser ditemukan
+      const dataModal = await AsyncStorage.getItem('dataModalStorage');
+      console.log('Dashboard tangkap data Modal : ', dataModal);
       if (storedUserId) {
         setIdUser(storedUserId);
       } else {
-        Alert.alert('ERROR', 'Akun User tidak terdeteksi!', [
+        Alert.alert('ERROR', 'Akun User tidak Valid!', [
           {
             text: 'OKE',
             onPress: () => {
