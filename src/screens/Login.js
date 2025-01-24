@@ -186,7 +186,7 @@ const Login = () => {
                   fontSize: w(6),
                   textTransform: 'uppercase',
                 }}>
-                buat
+                login
               </Text>
             </TouchableOpacity>
           </View>
