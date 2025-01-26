@@ -123,39 +123,43 @@ const Dashboard = () => {
 
   const buttonModal = item => {
     const deleteData = async ({idMengajar, namaMatkul, idUser}) => {
-      Alert.alert('INFO', 'Apakah Anda yakin ingin Hapus', [
-        {text: 'Batal', style: 'Cancel'},
-        {
-          text: 'Hapus',
-          onPress: async () => {
-            try {
-              if (idMengajar) {
-                await hapusData(idMengajar);
+      Alert.alert(
+        'INFO',
+        `Apakah Anda yakin ingin Hapus mata kuliah : ${namaMatkul}`,
+        [
+          {text: 'Batal', style: 'Cancel'},
+          {
+            text: 'Hapus',
+            onPress: async () => {
+              try {
+                if (idMengajar) {
+                  await hapusData(idMengajar);
 
-                Alert.alert(
-                  'INFO',
-                  `Berhasil Hapus Mata Kuliah : ${namaMatkul}`,
-                  [
-                    {
-                      text: 'OKE',
-                    },
-                  ],
-                );
-                // Agar bisa langsung refresh Data yg tampil
-                fetch(idUser);
-              } else {
-                Alert.alert(
-                  'INFO',
-                  `idMengajar tidak ditemukan : ${data.idMengajar}`,
-                );
+                  Alert.alert(
+                    'INFO',
+                    `Berhasil Hapus Mata Kuliah : ${namaMatkul}`,
+                    [
+                      {
+                        text: 'OKE',
+                      },
+                    ],
+                  );
+                  // Agar bisa langsung refresh Data yg tampil
+                  fetch(idUser);
+                } else {
+                  Alert.alert(
+                    'INFO',
+                    `idMengajar tidak ditemukan : ${data.idMengajar}`,
+                  );
+                }
+              } catch (error) {
+                Alert.alert('ERROR', 'Gagal Menghapus Data');
+                console.log(`Gagal Hapus Data : ${error}`);
               }
-            } catch (error) {
-              Alert.alert('ERROR', 'Gagal Menghapus Data');
-              console.log(`Gagal Hapus Data : ${error}`);
-            }
+            },
           },
-        },
-      ]);
+        ],
+      );
     };
 
     const dataMatkul = item;

@@ -274,8 +274,8 @@ const Notifikasi = ({refreshTrigger}) => {
     await stopAlarm();
 
     // Apabila Notifikasi Bunyi, utk menghindari create ulang Async Storage setelah apliksai di tutup dilatar belakang
-    await AsyncStorage.setItem('dataModalStorage', JSON.stringify(item));
-    await AsyncStorage.setItem('jenisModalStorage', JSON.stringify(jenisModal));
+    // await AsyncStorage.setItem('dataModalStorage', JSON.stringify(item));
+    // await AsyncStorage.setItem('jenisModalStorage', JSON.stringify(jenisModal));
 
     setDataModal(item);
     setDataModalJenis(jenisModal);
