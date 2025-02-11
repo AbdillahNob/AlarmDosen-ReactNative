@@ -29,6 +29,8 @@ const App = () => {
       try {
         getDatabase();
         // Notifikasi();
+        buatJadwal();
+        buatAkun();
         cekAllTabel();
       } catch (error) {
         console.log('Gagal menjalan Perintah Query', error);

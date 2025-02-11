@@ -75,7 +75,15 @@ const HeaderDashboard = ({idUser, dataJadwal}) => {
           try {
             await AsyncStorage.removeItem('idUser');
             Alert.alert('INFO', 'Berhasil Logout', [
-              {text: 'OKE', onPress: () => navigation.replace('Login')},
+              {
+                text: 'OKE',
+                onPress: () => {
+                  navigation.reset({
+                    index: 0,
+                    routes: [{name: 'Login'}],
+                  });
+                },
+              },
             ]);
           } catch (err) {
             console.log(`Gagal Logout: ${err}`);
