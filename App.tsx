@@ -9,8 +9,7 @@ import BuatAkun from './src/screens/crud/BuatAkun';
 import Dashboard from './src/screens/Dashboard';
 import TambahJadwal from './src/screens/crud/TambahJadwal';
 import EditJadwal from './src/screens/crud/EditJadwal';
-import ModalPesan from './src/screens/notifikasi/ModalPesan';
-import Notifikasi from './src/screens/notifikasi/Notifikasi';
+
 import {
   getDatabase,
   buatAkun,
